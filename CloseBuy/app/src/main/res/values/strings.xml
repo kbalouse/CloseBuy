@@ -1,3 +1,14 @@
 <resources>
+    <!--identifier strings (string keys)-->
+    <string name="log_tag">log_tag</string>
+    <string name="notification_setting">fourpointoh.closebuy.notification_setting</string>
+    <string name="update_action">fourpointoh.closebuy.update_intent_action</string>
+    <string name="first_app_launch">fourpointoh.closebuy.first_app_launch</string>
+
+    <!--User facing strings-->
     <string name="app_name">CloseBuy</string>
+    <string name="notification_setting_title">Notifications</string>
+    <string name="turn_notifications_on">Turn notifications on</string>
+    <string name="turn_notifications_off">Turn notifications off</string>
+    <string name="photo_feature_not_ready">This feature is not implemented yet, try again later.</string>
 </resources>
