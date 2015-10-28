@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
-    private MockDbHandle dbHandle;
+    private DbHandle dbHandle;
     private SharedPreferences preferences;
 
     protected void onCreate(Bundle savedInstanceState) {
