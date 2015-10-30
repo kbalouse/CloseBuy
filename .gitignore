@@ -38,3 +38,4 @@ proguard/
 
 # Android Studio captures folder
 captures/
+CloseBuy/app/src/main/res/values/api_key.xml
