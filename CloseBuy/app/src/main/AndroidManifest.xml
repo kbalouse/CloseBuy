@@ -27,6 +27,9 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
+
+        <activity android:name=".AddTextActivity" >
+        </activity>
     </application>
 
 </manifest>
