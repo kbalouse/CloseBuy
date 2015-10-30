@@ -64,8 +64,8 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(getString(R.string.log_tag), "Add text button clicked");
-                dbHandle.addItem("Cheese", new ArrayList<Category>());
-                updateList();
+                Intent intent = new Intent(HomeActivity.this, AddTextActivity.class);
+                startActivity(intent);
             }
         });
 

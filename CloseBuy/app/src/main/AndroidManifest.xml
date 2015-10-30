@@ -27,10 +27,13 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
-
+        
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/apikey" />
+
+        <activity android:name=".AddTextActivity" >
+        </activity>
     </application>
 
 </manifest>
