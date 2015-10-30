@@ -20,4 +20,7 @@ public interface DbHandle {
     // Deletes a reminder item from the DB.
     // If 'item' is not present in the DB, nothing will happen.
     void deleteItem(ReminderItem item);
+
+    // Delete all items in list
+    void deleteAllItems();
 }

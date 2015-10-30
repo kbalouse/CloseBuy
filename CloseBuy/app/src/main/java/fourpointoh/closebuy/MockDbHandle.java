@@ -35,11 +35,20 @@ public class MockDbHandle implements DbHandle {
         ReminderItem newItem2 = new ReminderItem();
         newItem2.id = idCounter++;
         cats = new ArrayList<Category>();
-        newItem2.itemName = "Bread";
+        newItem2.itemName = "Toilet Paper";
         cats.add(Category.BAKERY);
         cats.add(Category.GROCERY);
         newItem2.categories = cats;
         items.add(newItem2);
+
+        ReminderItem newItem3 = new ReminderItem();
+        newItem3.id = idCounter++;
+        cats = new ArrayList<Category>();
+        newItem3.itemName = "Toothpaste";
+        cats.add(Category.BAKERY);
+        cats.add(Category.GROCERY);
+        newItem3.categories = cats;
+        items.add(newItem3);
     }
 
     public ArrayList<ReminderItem> getAllItems() {
@@ -79,4 +88,5 @@ public class MockDbHandle implements DbHandle {
         }
     }
 
+    public void deleteAllItems() {}
 }

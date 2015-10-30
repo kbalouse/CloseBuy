@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class NotificationService extends Service {
 
-    private final int WAKE_UP_MILLIS = 1000;
+    private final int WAKE_UP_MILLIS = 60 * 1000;
     private Context appContext;
 
     @Override

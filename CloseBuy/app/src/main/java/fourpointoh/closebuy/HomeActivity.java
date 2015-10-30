@@ -64,6 +64,8 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(getString(R.string.log_tag), "Add text button clicked");
+                dbHandle.addItem("Cheese", new ArrayList<Category>());
+                updateList();
             }
         });
 
@@ -80,7 +82,16 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Get a db handle
-        dbHandle = new MockDbHandle(getApplicationContext());
+        dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
+
+        dbHandle.deleteAllItems();
+        ArrayList<Category> cats = new ArrayList<>();
+        cats.add(Category.GROCERY);
+        cats.add(Category.BAKERY);
+        dbHandle.addItem("Cheese", cats);
+        dbHandle.addItem("Soup", cats);
+        dbHandle.addItem("Bread", cats);
+        dbHandle.addItem("Milk", cats);
 
         // Set the reminder items to non null
         reminderItems = new ArrayList<ReminderItem>();
