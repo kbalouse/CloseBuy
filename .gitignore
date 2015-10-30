@@ -1,5 +1,10 @@
 Start/*
 
+*~
+
+# To prevent API key from getting pushed to github
+CloseBuy/app/src/main/res/values/api_key.xml
+
 # Built application files
 *.apk
 *.ap_
