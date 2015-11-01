@@ -10,5 +10,5 @@
     <string name="notification_setting_title">Notifications</string>
     <string name="turn_notifications_on">Turn notifications on</string>
     <string name="turn_notifications_off">Turn notifications off</string>
-    <string name="photo_feature_not_ready">This feature is not implemented yet, try again later.</string>
+    <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
 </resources>

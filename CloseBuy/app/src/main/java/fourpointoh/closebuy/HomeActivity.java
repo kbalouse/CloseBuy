@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private final int CONTEXT_MENU_ID_DELETE = 0;
+    private final int CONTEXT_MENU_ID_DISABLE = 1;
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
@@ -75,7 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d(getString(R.string.log_tag), "Add photo button clicked");
                 Toast.makeText(
                         getApplicationContext(),
-                        getString(R.string.photo_feature_not_ready),
+                        getString(R.string.feature_not_ready),
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -110,6 +114,9 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d(getString(R.string.log_tag), "Position " + position);
             }
         });
+
+        // Register the list view to create context menus when list items are long pressed
+        registerForContextMenu(listView);
 
         // Initialize the preferences
         preferences = getPreferences(Context.MODE_PRIVATE);
@@ -197,6 +204,40 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d(getString(R.string.log_tag), "unknown menu item clicked");
                 return super.onOptionsItemSelected(menuItem);
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        Log.d(getString(R.string.log_tag), "onCreateContextMenu()");
+        AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+        menu.setHeaderTitle(reminderItems.get(adapterInfo.position).itemName);
+        menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "disable"); // groupid, itemid, menu position, title
+        menu.add(0, CONTEXT_MENU_ID_DELETE, 1, "delete");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Log.d(getString(R.string.log_tag), "onContextItemSelected(): id=" + item.getItemId());
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case CONTEXT_MENU_ID_DISABLE:
+                Toast.makeText(this, getString(R.string.feature_not_ready), Toast.LENGTH_SHORT).show();
+                return true;
+            case CONTEXT_MENU_ID_DELETE:
+                deleteReminder(info.position);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void deleteReminder(int arrayAdapterPosition) {
+        Log.d(getString(R.string.log_tag), "User is deleting reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+        ReminderItem item = reminderItems.get(arrayAdapterPosition);
+        reminderItems.remove(arrayAdapterPosition);
+        dbHandle.deleteItem(item);
+        updateList();
     }
 
     private void updateList() {
