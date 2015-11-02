@@ -93,7 +93,7 @@ public class HomeActivity extends AppCompatActivity {
         ArrayList<Category> cats = new ArrayList<>();
         cats.add(Category.GROCERY);
         cats.add(Category.BAKERY);
-        dbHandle.addItem("Cheese", cats);
+        dbHandle.addItem("Cheese", new ArrayList<Category>()); // Won't show up in list since there are no categories
         dbHandle.addItem("Soup", cats);
         dbHandle.addItem("Bread", cats);
         dbHandle.addItem("Milk", cats);

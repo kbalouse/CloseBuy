@@ -49,7 +49,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
                     " )";
 
     private static final String SQL_CREATE_CONTAINS_TABLE =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORY + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_CONTAINS + " (" +
                     CATEGORY_ID + " INTEGER NOT NULL," +
                     ITEM_ID + " INTEGER NOT NULL," +
                     "FOREIGN KEY(" + ITEM_ID + ") REFERENCES " +
@@ -95,18 +95,33 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     // Returns all reminder items in the DB.
     public ArrayList<ReminderItem> getAllItems() {
         ArrayList<ReminderItem> itemList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_ITEM;
+        String selectQuery = "SELECT " + TABLE_ITEM + "." + ITEM_ID + "," + ITEM_NAME + "," + ITEM_ENABLED + "," + CATEGORY_ID +
+                            " FROM " + TABLE_ITEM + ", " + TABLE_CONTAINS +
+                            " WHERE " + TABLE_ITEM + "." + ITEM_ID + "=" + TABLE_CONTAINS + "." + ITEM_ID;
 
+        Category[] categories = Category.values();
         SQLiteDatabase db = Instance.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+        ReminderItem item = new ReminderItem();
+        int previousItemId = -1;
         if (cursor.moveToFirst()) {
             do {
-                ReminderItem item = new ReminderItem();
-                item.id = cursor.getInt((cursor.getColumnIndex(ITEM_ID)));
-                item.enabled  = cursor.getInt((cursor.getColumnIndex(ITEM_ENABLED))) == 1;
-                item.itemName = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
-                itemList.add(item);
+                if (previousItemId == -1 || item.id != cursor.getInt((cursor.getColumnIndex(ITEM_ID)))) {
+                    if (previousItemId != -1) itemList.add(item);
+                    item = new ReminderItem();
+                    item.id = cursor.getInt((cursor.getColumnIndex(ITEM_ID)));
+                    item.enabled = cursor.getInt((cursor.getColumnIndex(ITEM_ENABLED))) == 1;
+                    item.itemName = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
+                    item.categories = new ArrayList<Category>();
+                    item.categories.add(categories[cursor.getInt(cursor.getColumnIndex(CATEGORY_ID)) - 1]);
+                    previousItemId = item.id;
+                } else {
+                    int cat_id = cursor.getInt(cursor.getColumnIndex(CATEGORY_ID));
+                    item.categories.add(categories[cat_id - 1]);
+                }
             } while (cursor.moveToNext());
+
+            if (previousItemId != -1) itemList.add(item);
         }
         return itemList;
     }
