@@ -25,6 +25,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private final int CONTEXT_MENU_ID_DELETE = 0;
     private final int CONTEXT_MENU_ID_DISABLE = 1;
+    private final int CONTEXT_MENU_ID_ENABLE = 2;
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
@@ -211,9 +212,11 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(getString(R.string.log_tag), "onCreateContextMenu()");
         AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-        menu.setHeaderTitle(reminderItems.get(adapterInfo.position).itemName);
-        menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "disable"); // groupid, itemid, menu position, title
-        menu.add(0, CONTEXT_MENU_ID_DELETE, 1, "delete");
+        ReminderItem selected = reminderItems.get(adapterInfo.position);
+        menu.setHeaderTitle(selected.itemName);
+        if (selected.enabled) menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "Disable Reminder"); // groupid, itemid, menu position, title
+        else menu.add(0, CONTEXT_MENU_ID_ENABLE, 0, "Enable Reminder");
+        menu.add(0, CONTEXT_MENU_ID_DELETE, 1, "Delete Reminder");
     }
 
     @Override
@@ -222,7 +225,10 @@ public class HomeActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case CONTEXT_MENU_ID_DISABLE:
-                Toast.makeText(this, getString(R.string.feature_not_ready), Toast.LENGTH_SHORT).show();
+                disableReminder(info.position);
+                return true;
+            case CONTEXT_MENU_ID_ENABLE:
+                enableReminder(info.position);
                 return true;
             case CONTEXT_MENU_ID_DELETE:
                 deleteReminder(info.position);
@@ -237,6 +243,20 @@ public class HomeActivity extends AppCompatActivity {
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
         reminderItems.remove(arrayAdapterPosition);
         dbHandle.deleteItem(item);
+        updateList();
+    }
+
+    private void disableReminder(int arrayAdapterPosition) {
+        Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+        ReminderItem item = reminderItems.get(arrayAdapterPosition);
+        dbHandle.disableItem(item);
+        updateList();
+    }
+
+    private void enableReminder(int arrayAdapterPosition) {
+        Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+        ReminderItem item = reminderItems.get(arrayAdapterPosition);
+        dbHandle.enableItem(item);
         updateList();
     }
 

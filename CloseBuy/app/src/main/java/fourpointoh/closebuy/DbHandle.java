@@ -23,4 +23,10 @@ public interface DbHandle {
 
     // Delete all items in list
     void deleteAllItems();
+
+    // Disable notifications for an item
+    void disableItem(ReminderItem item);
+
+    // Enable notifications for an item
+    void enableItem(ReminderItem item);
 }

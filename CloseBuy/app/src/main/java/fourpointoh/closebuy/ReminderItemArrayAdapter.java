@@ -1,6 +1,8 @@
 package fourpointoh.closebuy;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,8 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
         // Give content to the view according to the given item
         TextView textView = (TextView) v.findViewById(R.id.item_name);
         textView.setText(item.itemName);
+        if (!item.enabled) textView.setTextColor(Color.RED);
+        else textView.setTextColor(Color.BLACK);
 
         return v;
     }
