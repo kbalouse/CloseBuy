@@ -26,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private final int CONTEXT_MENU_ID_DELETE = 0;
     private final int CONTEXT_MENU_ID_DISABLE = 1;
     private final int CONTEXT_MENU_ID_ENABLE = 2;
+    private String newItem;
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
@@ -70,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(getString(R.string.log_tag), "Add text button clicked");
                 Intent intent = new Intent(HomeActivity.this, AddTextActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -126,7 +127,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         Log.d(getString(R.string.log_tag), "onResume()");
 
         updateList();
@@ -214,7 +214,8 @@ public class HomeActivity extends AppCompatActivity {
 
         ReminderItem selected = reminderItems.get(adapterInfo.position);
         menu.setHeaderTitle(selected.itemName);
-        if (selected.enabled) menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "Disable Reminder"); // groupid, itemid, menu position, title
+        if (selected.enabled)
+            menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "Disable Reminder"); // groupid, itemid, menu position, title
         else menu.add(0, CONTEXT_MENU_ID_ENABLE, 0, "Enable Reminder");
         menu.add(0, CONTEXT_MENU_ID_DELETE, 1, "Delete Reminder");
     }
@@ -298,4 +299,20 @@ public class HomeActivity extends AppCompatActivity {
     private void setNotificationSetting(boolean value) {
         preferences.edit().putBoolean(getString(R.string.notification_setting), value).apply();
     }
+
+    // to retrieve information from AddTextActivity
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                ArrayList<Category> cats = new ArrayList<>(); // change later
+                cats.add(Category.GROCERY); // change later
+                cats.add(Category.BAKERY); // change later
+                newItem = data.getStringExtra("editText"); // grab string using key = editText
+                dbHandle.addItem(newItem, cats);
+                Log.d(getString(R.string.log_tag), "Returned to home activity. Adding new item = " + newItem);
+            }
+        }
+    }
+
 }

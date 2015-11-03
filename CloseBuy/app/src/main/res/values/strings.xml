@@ -10,7 +10,7 @@
     <string name="notification_setting_title">Notifications</string>
     <string name="turn_notifications_on">Turn notifications on</string>
     <string name="turn_notifications_off">Turn notifications off</string>
-    <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
+
 
     <!--Add text activity strings-->
     <string name="edit_message">Item Name</string>
@@ -19,4 +19,5 @@
     <string name="Category1">Grocery</string>
     <string name="Category2">Personal Care</string>
     <string name="Done">Done</string>
+    <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
 </resources>
