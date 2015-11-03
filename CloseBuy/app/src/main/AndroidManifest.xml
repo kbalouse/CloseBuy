@@ -33,7 +33,8 @@
             android:value="@string/apikey" />
 
         <activity android:name=".AddTextActivity"
-            android:label="Add New Item">
+            android:label="Add New Item"
+            android:windowSoftInputMode="stateAlwaysVisible">
         </activity>
     </application>
 
