@@ -32,7 +32,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/apikey" />
 
-        <activity android:name=".AddTextActivity" >
+        <activity android:name=".AddTextActivity"
+            android:label="Add New Item">
         </activity>
     </application>
 

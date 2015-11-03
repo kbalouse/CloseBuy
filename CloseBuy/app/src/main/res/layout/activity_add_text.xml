@@ -1,10 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="fourpointoh.closebuy.AddTextActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+    <EditText android:id="@+id/edit_message"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_message"
+        android:inputType="textAutoComplete|textAutoCorrect|text" />
+    <Switch
+        android:id="@+id/mySwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/toggle_message"
+        android:layout_below="@+id/edit_message"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/edit_message"
+        android:checked="false" />
+
+    <TextView
+        android:id="@+id/switchStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/mySwitch"
+        android:layout_marginTop="22dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/switchStatus"
+        android:layout_marginTop="22dp"
+        android:text="@string/Categories"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+    <CheckBox
+        android:id="@+id/Category1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Category1"
+        android:layout_gravity="center_vertical"
+        android:layout_below="@+id/textView1"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="38dp" />
+
+    <CheckBox
+            android:id="@+id/Category2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Category2"
+        android:layout_alignTop="@+id/checkBox"
+        android:layout_centerHorizontal="true" />
+
+
+
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Done"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="98dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/edit_message"
+        android:background="#ff2a56c6"
+        android:textColor="#ffffff" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pharmacy"
+        android:id="@+id/checkBox"
+        android:checked="false"
+        android:layout_above="@+id/checkBox2"
+        android:layout_alignEnd="@+id/btnDone" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hardware"
+        android:id="@+id/checkBox2"
+        android:layout_marginTop="41dp"
+        android:checked="false"
+        android:layout_below="@+id/Category1"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pet Care"
+        android:id="@+id/checkBox3"
+        android:checked="false"
+        android:layout_alignTop="@+id/checkBox2"
+        android:layout_alignStart="@+id/Category2"
+        android:layout_alignEnd="@+id/Category2" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Post Office"
+        android:id="@+id/checkBox4"
+        android:checked="false"
+        android:layout_alignTop="@+id/checkBox3"
+        android:layout_alignStart="@+id/checkBox" />
 
 </RelativeLayout>
