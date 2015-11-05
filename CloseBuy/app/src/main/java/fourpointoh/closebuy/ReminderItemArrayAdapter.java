@@ -45,7 +45,7 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
         // Give content to the view according to the given item
         TextView textView = (TextView) v.findViewById(R.id.item_name);
         textView.setText(item.itemName);
-        if (!item.enabled) textView.setTextColor(Color.RED);
+        if (!item.enabled) textView.setTextColor(Color.GRAY);
         else textView.setTextColor(Color.BLACK);
 
         return v;
