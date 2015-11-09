@@ -23,24 +23,14 @@
         android:checked="false" />
 
     <TextView
-        android:id="@+id/switchStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/mySwitch"
-        android:layout_marginTop="22dp"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/switchStatus"
         android:layout_marginTop="22dp"
         android:text="@string/Categories"
         android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/mySwitch" />
 
 
     <CheckBox

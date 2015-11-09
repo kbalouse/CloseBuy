@@ -30,7 +30,7 @@ public class AddTextActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_text);
         Log.d(msg, "The AddTextActivity onCreate() event");
-        switchStatus = (TextView) findViewById(R.id.switchStatus);
+        //switchStatus = (TextView) findViewById(R.id.switchStatus);
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
@@ -52,24 +52,17 @@ public class AddTextActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
 
-
+                /*
                 if(isChecked){
                     switchStatus.setText("Switch is currently ON");
                 } // if
                 else{
                     switchStatus.setText("Switch is currently OFF");
                 } // else
-
+                */
             } // onCheckedChanged
         }); // setOnCheckedChangeListener
 
-        //check the current state before we display the screen
-        if(mySwitch.isChecked()){
-            switchStatus.setText("Switch is currently ON");
-        }
-        else {
-            switchStatus.setText("Switch is currently OFF");
-        }
 
 
 
