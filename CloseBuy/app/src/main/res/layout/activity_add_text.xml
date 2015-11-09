@@ -44,22 +44,24 @@
 
 
     <CheckBox
-        android:id="@+id/Category1"
+        android:id="@+id/grocery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Category1"
         android:layout_gravity="center_vertical"
         android:layout_below="@+id/textView1"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="38dp" />
+        android:layout_marginTop="38dp"
+        android:onClick="onCheckboxClicked"/>
 
     <CheckBox
-            android:id="@+id/Category2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Category2"
-        android:layout_alignTop="@+id/checkBox"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/personalCare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Category2"
+        android:layout_alignTop="@+id/pharmacy"
+        android:layout_centerHorizontal="true"
+        android:onClick="onCheckboxClicked"/>
 
 
 
@@ -80,38 +82,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pharmacy"
-        android:id="@+id/checkBox"
+        android:id="@+id/pharmacy"
         android:checked="false"
-        android:layout_above="@+id/checkBox2"
-        android:layout_alignEnd="@+id/btnDone" />
+        android:layout_above="@+id/hardware"
+        android:layout_alignEnd="@+id/btnDone"
+        android:onClick="onCheckboxClicked"/>
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hardware"
-        android:id="@+id/checkBox2"
+        android:id="@+id/hardware"
         android:layout_marginTop="41dp"
         android:checked="false"
-        android:layout_below="@+id/Category1"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/grocery"
+        android:layout_alignParentStart="true"
+        android:onClick="onCheckboxClicked"/>
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pet Care"
-        android:id="@+id/checkBox3"
+        android:id="@+id/petCare"
         android:checked="false"
-        android:layout_alignTop="@+id/checkBox2"
-        android:layout_alignStart="@+id/Category2"
-        android:layout_alignEnd="@+id/Category2" />
+        android:layout_alignTop="@+id/hardware"
+        android:layout_alignStart="@+id/personalCare"
+        android:layout_alignEnd="@+id/personalCare"
+        android:onClick="onCheckboxClicked"/>
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Post Office"
-        android:id="@+id/checkBox4"
+        android:id="@+id/postOffice"
         android:checked="false"
-        android:layout_alignTop="@+id/checkBox3"
-        android:layout_alignStart="@+id/checkBox" />
+        android:layout_alignTop="@+id/petCare"
+        android:layout_alignStart="@+id/pharmacy"
+        android:onClick="onCheckboxClicked"/>
 
 </RelativeLayout>

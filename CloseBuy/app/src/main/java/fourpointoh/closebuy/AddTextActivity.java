@@ -13,6 +13,8 @@ import android.widget.Toast;
 import android.widget.Button;
 import android.view.View;
 import java.util.ArrayList;
+import android.widget.CheckBox;
+
 
 public class AddTextActivity extends AppCompatActivity {
     String msg = "Android : ";
@@ -21,6 +23,7 @@ public class AddTextActivity extends AppCompatActivity {
     private EditText editText;
     private Button doneButton;
     private DbHandle dbHandle;
+    private ReminderItem newItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class AddTextActivity extends AppCompatActivity {
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
+
 
         //set the switch to OFF initially
         mySwitch.setChecked(false);
@@ -67,6 +71,8 @@ public class AddTextActivity extends AppCompatActivity {
             switchStatus.setText("Switch is currently OFF");
         }
 
+
+
         doneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Send newItem to Home Activity on click
@@ -79,5 +85,40 @@ public class AddTextActivity extends AppCompatActivity {
         });
 
     } // onCreate
+
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+            case R.id.grocery:
+                if (checked) {
+                    Log.d(getString(R.string.log_tag), "Grocery checkbox clicked");
+                    //newItem.addItem();
+                }
+                break;
+            case R.id.personalCare:
+                if (checked)
+                    Log.d(getString(R.string.log_tag), "Personal Care checkbox clicked");
+                break;
+            case R.id.pharmacy:
+                if (checked)
+                    Log.d(getString(R.string.log_tag), "Pharmacy checkbox clicked");
+                break;
+            case R.id.hardware:
+                if (checked)
+                    Log.d(getString(R.string.log_tag), "Hardware checkbox clicked");
+                break;
+            case R.id.petCare:
+                if (checked)
+                    Log.d(getString(R.string.log_tag), "Pet Care checkbox clicked");
+                break;
+            case R.id.postOffice:
+                if (checked)
+                    Log.d(getString(R.string.log_tag), "Post Office checkbox clicked");
+                break;
+        }
+    }
 } // addTextActivity
 
