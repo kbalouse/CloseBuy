@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class NearbyStoreUpdate extends BroadcastReceiver {
 
     @Override
@@ -17,10 +19,16 @@ public class NearbyStoreUpdate extends BroadcastReceiver {
 //        if (!intent.getAction().equals(context.getString(R.string.update_action)))
 
         Log.d(context.getString(R.string.log_tag), "NearbyStoreUpdate onReceive()");
-        fireNotification(context, "Example title", "Example description", R.drawable.add_text_image);
+        GooglePlacesRequest request = new GooglePlacesRequest();
+        request.setLatitude(42.2797577);
+        request.setLongitude(-83.7408239);
+        request.setRadius((double) 100);
+        request.addType("pharmacy");
 
-        // TODO
-        // implement update logic
+        ArrayList<Place> places = new GooglePlacesService(context).getNearbyPlaces(request);
+
+        if(places.size() > 0)
+            fireNotification(context, "CloseBuy", "You are near " + places.get(0).getName() + ". Do you want to pick up Band-Aids?", R.drawable.add_text_image);
     }
 
     private void fireNotification(Context context, String title, String description, int iconResource) {
@@ -34,6 +42,7 @@ public class NearbyStoreUpdate extends BroadcastReceiver {
         builder.setContentText(description);
         builder.setSmallIcon(iconResource);
         builder.setContentIntent(pending);
+        builder.setStyle(new Notification.BigTextStyle().bigText(description));
 
         // Fetch the notification service and fire the notification
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

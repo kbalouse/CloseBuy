@@ -90,15 +90,6 @@ public class HomeActivity extends AppCompatActivity {
         // Get a db handle
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
-        dbHandle.deleteAllItems();
-        ArrayList<Category> cats = new ArrayList<>();
-        cats.add(Category.GROCERY);
-        cats.add(Category.BAKERY);
-        dbHandle.addItem("Cheese", new ArrayList<Category>()); // Won't show up in list since there are no categories
-        dbHandle.addItem("Soup", cats);
-        dbHandle.addItem("Bread", cats);
-        dbHandle.addItem("Milk", cats);
-
         // Set the reminder items to non null
         reminderItems = new ArrayList<ReminderItem>();
 
