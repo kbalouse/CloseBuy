@@ -27,8 +27,11 @@ public class NearbyStoreUpdate extends BroadcastReceiver {
 
         ArrayList<Place> places = new GooglePlacesService(context).getNearbyPlaces(request);
 
-        if(places.size() > 0)
-            fireNotification(context, "CloseBuy", "You are near " + places.get(0).getName() + ". Do you want to pick up Band-Aids?", R.drawable.add_text_image);
+        ReminderItemDbHelper db = ReminderItemDbHelper.getInstance(context);
+        ArrayList<ReminderItem> itemList = db.getAllItems();
+
+        if(places.size() > 0 && itemList.size() > 0)
+            fireNotification(context, "CloseBuy", "You are near " + places.get(0).getName() + ". Do you want to pick up " + itemList.get(0).itemName + "?", R.drawable.add_text_image);
     }
 
     private void fireNotification(Context context, String title, String description, int iconResource) {
