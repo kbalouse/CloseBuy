@@ -28,14 +28,6 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
-        
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/android_places_api_key" />
-
-        <meta-data
-            android:name="com.google.places.API_KEY"
-            android:value="@string/web_places_api_key" />
 
         <activity android:name=".AddTextActivity"
             android:label="Add New Item"

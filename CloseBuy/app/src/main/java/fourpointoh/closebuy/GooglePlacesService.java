@@ -25,7 +25,7 @@ public class GooglePlacesService {
     private static String apiKey;
 
     public GooglePlacesService(Context context) {
-        apiKey = context.getString(R.string.web_places_api_key);
+        apiKey = context.getString(R.string.apikey);
     }
 
     public ArrayList<Place> getNearbyPlaces(GooglePlacesRequest request) {
