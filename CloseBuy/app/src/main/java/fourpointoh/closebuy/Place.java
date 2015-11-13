@@ -21,6 +21,17 @@ public class Place {
     public Double getLongitude() { return longitude; }
     public ArrayList<String> getTypes() { return types; }
 
+    public ArrayList<Category> getRecognizedCategories() {
+        ArrayList<Category> cats = new ArrayList<Category>();
+        for (String type : types) {
+            Category c = Category.toCategory(type);
+            if (c != null) {
+                cats.add(c);
+            }
+        }
+        return cats;
+    }
+
     public void setPlaceId(String placeId) { this.placeId = placeId; }
     public void setName(String name) { this.name = name; }
     public void setVicinity(String vicinity) { this.vicinity = vicinity; }

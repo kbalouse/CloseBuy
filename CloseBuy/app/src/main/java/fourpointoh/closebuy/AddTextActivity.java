@@ -24,6 +24,7 @@ public class AddTextActivity extends AppCompatActivity {
     private Button doneButton;
     private DbHandle dbHandle;
     private ReminderItem newItem;
+    private ArrayList<Category> checkedCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,8 @@ public class AddTextActivity extends AppCompatActivity {
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
+        checkedCategories = new ArrayList<Category>();
+        dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
 
         //set the switch to OFF initially
@@ -68,12 +71,18 @@ public class AddTextActivity extends AppCompatActivity {
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Send newItem to Home Activity on click
                 Log.d(getString(R.string.log_tag), "Done button clicked");
+
+                // Enforce that the necessary fields are non empty
+                // TODO
+                String name = editText.getText().toString();
+
+                // Add the item to the db
+                dbHandle.addItem(name, checkedCategories);
+
+                // Return back to the home screen
                 Intent intent = new Intent(AddTextActivity.this, HomeActivity.class);
-                intent.putExtra("editText",(String)editText.getText().toString());
-                setResult(RESULT_OK, intent);
-                finish();
+                startActivity(intent);
             }
         });
 
@@ -86,30 +95,40 @@ public class AddTextActivity extends AppCompatActivity {
         // Check which checkbox was clicked
         switch(view.getId()) {
             case R.id.grocery:
-                if (checked) {
-                    Log.d(getString(R.string.log_tag), "Grocery checkbox clicked");
-                    //newItem.addItem();
-                }
+                if (checked)
+                    checkedCategories.add(Category.GROCERY);
+                else
+                    checkedCategories.remove(Category.GROCERY);
                 break;
             case R.id.personalCare:
-                if (checked)
-                    Log.d(getString(R.string.log_tag), "Personal Care checkbox clicked");
+//                if (checked)
+//                    checkedCategories.add(Category.);
+//                else
+//                    checkedCategories.remove(Category.);
                 break;
             case R.id.pharmacy:
                 if (checked)
-                    Log.d(getString(R.string.log_tag), "Pharmacy checkbox clicked");
+                    checkedCategories.add(Category.PHARMACY);
+                else
+                    checkedCategories.remove(Category.PHARMACY);
                 break;
             case R.id.hardware:
                 if (checked)
-                    Log.d(getString(R.string.log_tag), "Hardware checkbox clicked");
+                    checkedCategories.add(Category.HARDWARE);
+                else
+                    checkedCategories.remove(Category.HARDWARE);
                 break;
             case R.id.petCare:
                 if (checked)
-                    Log.d(getString(R.string.log_tag), "Pet Care checkbox clicked");
+                    checkedCategories.add(Category.PET);
+                else
+                    checkedCategories.remove(Category.PET);
                 break;
             case R.id.postOffice:
-                if (checked)
-                    Log.d(getString(R.string.log_tag), "Post Office checkbox clicked");
+//                if (checked)
+//                    checkedCategories.add(Category.);
+//                else
+//                    checkedCategories.remove(Category.);
                 break;
         }
     }

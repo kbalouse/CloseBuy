@@ -1,10 +1,14 @@
 package fourpointoh.closebuy;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +31,12 @@ public class HomeActivity extends AppCompatActivity {
     private final int CONTEXT_MENU_ID_DELETE = 0;
     private final int CONTEXT_MENU_ID_DISABLE = 1;
     private final int CONTEXT_MENU_ID_ENABLE = 2;
+
+    private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean hasLocationPermission = false;
+
+    private Menu settingsMenu;
+
     private String newItem;
 
     private ArrayList<ReminderItem> reminderItems;
@@ -71,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(getString(R.string.log_tag), "Add text button clicked");
                 Intent intent = new Intent(HomeActivity.this, AddTextActivity.class);
-                startActivityForResult(intent, 1);
+                startActivity(intent);
             }
         });
 
@@ -113,6 +124,9 @@ public class HomeActivity extends AppCompatActivity {
 
         // Initialize the preferences
         preferences = getPreferences(Context.MODE_PRIVATE);
+
+        // Need to ask permission in Android devices 6.0 (API 23) or higher
+        askUserForLocationPermission();
     }
 
     @Override
@@ -142,7 +156,54 @@ public class HomeActivity extends AppCompatActivity {
         inflater.inflate(R.menu.home_menu, menu);
         super.onCreateOptionsMenu(menu);
 
-        MenuItem item = menu.findItem(R.id.action_notifications);
+        if (hasLocationPermission) {
+            initializeNotificationService();
+        }
+
+        settingsMenu = menu;
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (hasLocationPermission) {
+            switch (menuItem.getItemId()) {
+                case R.id.action_notifications:
+                    // Check the current notification setting, and switch it
+                    boolean isNotificationsOn = isNotificationSettingOn();
+
+                    if (isNotificationsOn) {
+                        // Turn notifications off
+                        Log.d(getString(R.string.log_tag), "Turning notifications off");
+                        stopService(new Intent(getApplicationContext(), NotificationService.class));
+
+                        menuItem.setTitle(getString(R.string.turn_notifications_on));
+                    } else {
+                        // Turn notifications on
+                        Log.d(getString(R.string.log_tag), "Turning notifications on");
+                        Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
+                        startService(startServiceIntent);
+
+                        menuItem.setTitle(getString(R.string.turn_notifications_off));
+                    }
+
+                    setNotificationSetting(!isNotificationsOn);
+                    break;
+
+                default:
+                    Log.d(getString(R.string.log_tag), "unknown menu item clicked");
+                    return super.onOptionsItemSelected(menuItem);
+            }
+        } else {
+            Toast.makeText(this ,"You have not granted this app permission to access your location", Toast.LENGTH_LONG).show();
+        }
+
+        return true;
+    }
+
+    private void initializeNotificationService() {
+        MenuItem item = (MenuItem) settingsMenu.findItem(R.id.action_notifications);
 
         // Start the notification service if it the first time opening the app
         boolean isFirstLaunch = preferences.getBoolean(getString(R.string.first_app_launch), true);
@@ -163,38 +224,6 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             item.setTitle(getString(R.string.turn_notifications_on));
             Log.d(getString(R.string.log_tag), "Notifications are off");
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.action_notifications:
-                // Check the current notification setting, and switch it
-                boolean isNotificationsOn = isNotificationSettingOn();
-
-                if (isNotificationsOn) {
-                    // Turn notifications off
-                    Log.d(getString(R.string.log_tag), "Turning notifications off");
-                    stopService(new Intent(getApplicationContext(), NotificationService.class));
-
-                    menuItem.setTitle(getString(R.string.turn_notifications_on));
-                } else {
-                    // Turn notifications on
-                    Log.d(getString(R.string.log_tag), "Turning notifications on");
-                    Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
-                    startService(startServiceIntent);
-
-                    menuItem.setTitle(getString(R.string.turn_notifications_off));
-                }
-
-                setNotificationSetting(!isNotificationsOn);
-                return true;
-            default:
-                Log.d(getString(R.string.log_tag), "unknown menu item clicked");
-                return super.onOptionsItemSelected(menuItem);
         }
     }
 
@@ -291,19 +320,60 @@ public class HomeActivity extends AppCompatActivity {
         preferences.edit().putBoolean(getString(R.string.notification_setting), value).apply();
     }
 
-    // to retrieve information from AddTextActivity
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                ArrayList<Category> cats = new ArrayList<>(); // change later
-                cats.add(Category.GROCERY); // change later
-                cats.add(Category.BAKERY); // change later
-                newItem = data.getStringExtra("editText"); // grab string using key = editText
-                dbHandle.addItem(newItem, cats);
-                Log.d(getString(R.string.log_tag), "Returned to home activity. Adding new item = " + newItem);
+    private void askUserForLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Log.d(getString(R.string.log_tag), "Permissions: app needs to show request permission rationale");
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                Log.d(getString(R.string.log_tag), "Permissions: app does not need permission rationale. requesting permissions...");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
             }
+        } else {
+            Log.d(getString(R.string.log_tag), "Permissions: no need for request");
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.d(getString(R.string.log_tag), "Permissions: Granted. Initializing notification service.");
+                    hasLocationPermission = true;
+                    initializeNotificationService();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    hasLocationPermission = false;
+
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        Log.d(getString(R.string.log_tag), "Permissions: Denied.");
+                    } else {
+                        Log.d(getString(R.string.log_tag), "Permissions: Denied. Other");
+                    }
+                }
+            }
+        }
+    }
 }
