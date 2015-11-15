@@ -35,7 +35,7 @@
 
     <CheckBox
         android:id="@+id/grocery"
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="@string/Category1"
         android:layout_gravity="center_vertical"
@@ -45,8 +45,8 @@
         android:onClick="onCheckboxClicked"/>
 
     <CheckBox
-        android:id="@+id/personalCare"
-        android:layout_width="wrap_content"
+        android:id="@+id/convenience"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="@string/Category2"
         android:layout_alignTop="@+id/pharmacy"
@@ -69,7 +69,7 @@
         android:textColor="#ffffff" />
 
     <CheckBox
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="Pharmacy"
         android:id="@+id/pharmacy"
@@ -79,7 +79,7 @@
         android:onClick="onCheckboxClicked"/>
 
     <CheckBox
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="Hardware"
         android:id="@+id/hardware"
@@ -90,18 +90,18 @@
         android:onClick="onCheckboxClicked"/>
 
     <CheckBox
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="Pet Care"
         android:id="@+id/petCare"
         android:checked="false"
         android:layout_alignTop="@+id/hardware"
-        android:layout_alignStart="@+id/personalCare"
-        android:layout_alignEnd="@+id/personalCare"
+        android:layout_alignStart="@+id/convenience"
+        android:layout_alignEnd="@+id/convenience"
         android:onClick="onCheckboxClicked"/>
 
     <CheckBox
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:text="Post Office"
         android:id="@+id/postOffice"

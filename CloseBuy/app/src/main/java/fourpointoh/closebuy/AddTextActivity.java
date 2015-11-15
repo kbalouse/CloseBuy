@@ -100,11 +100,11 @@ public class AddTextActivity extends AppCompatActivity {
                 else
                     checkedCategories.remove(Category.GROCERY);
                 break;
-            case R.id.personalCare:
-//                if (checked)
-//                    checkedCategories.add(Category.);
-//                else
-//                    checkedCategories.remove(Category.);
+            case R.id.convenience:
+                if (checked)
+                    checkedCategories.add(Category.CONVENIENCE);
+                else
+                    checkedCategories.remove(Category.CONVENIENCE);
                 break;
             case R.id.pharmacy:
                 if (checked)

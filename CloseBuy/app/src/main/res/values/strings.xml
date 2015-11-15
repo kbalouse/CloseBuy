@@ -17,7 +17,7 @@
     <string name="toggle_message">I want a specific store</string>
     <string name="Categories">Categories</string>
     <string name="Category1">Grocery</string>
-    <string name="Category2">Personal Care</string>
+    <string name="Category2">Convenience</string>
     <string name="Done">Done</string>
     <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
 </resources>
