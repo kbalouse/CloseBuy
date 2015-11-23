@@ -125,8 +125,7 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize the preferences
         preferences = getPreferences(Context.MODE_PRIVATE);
 
-        // Need to ask permission in Android devices 6.0 (API 23) or higher
-        askUserForLocationPermission();
+
     }
 
     @Override
@@ -155,12 +154,14 @@ public class HomeActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.home_menu, menu);
         super.onCreateOptionsMenu(menu);
-
-        if (hasLocationPermission) {
-            initializeNotificationService();
-        }
-
         settingsMenu = menu;
+
+        //if (hasLocationPermission) {
+        //    initializeNotificationService();
+        //}
+
+        // Need to ask permission in Android devices 6.0 (API 23) or higher
+        askUserForLocationPermission();
 
         return true;
     }
@@ -348,6 +349,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         } else {
             Log.d(getString(R.string.log_tag), "Permissions: no need for request");
+            hasLocationPermission = true;
+            initializeNotificationService();
         }
     }
 
