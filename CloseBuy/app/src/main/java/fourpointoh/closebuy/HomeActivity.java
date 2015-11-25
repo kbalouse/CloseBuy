@@ -5,21 +5,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,20 +37,23 @@ public class HomeActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean hasLocationPermission = false;
 
-    private Menu settingsMenu;
-
-    private String newItem;
-
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
     private DbHandle dbHandle;
     private SharedPreferences preferences;
+
+    private Switch notificationSwitch;
+    private SeekBar radiusSeekbar;
+    private SeekBar snoozeSeekbar;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         Log.d(getString(R.string.log_tag), "onCreate()");
+
+        // Initialize the preferences
+        preferences = getPreferences(Context.MODE_PRIVATE);
 
         // Set the button pictures and click handlers
         FloatingActionButton add = (FloatingActionButton) findViewById(R.id.add);
@@ -98,6 +103,95 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        notificationSwitch = (Switch) findViewById(R.id.notification_switch);
+        radiusSeekbar = (SeekBar) findViewById(R.id.radius_seekbar);
+        snoozeSeekbar = (SeekBar) findViewById(R.id.snooze_seekbar);
+
+        // Set listeners for settings menu
+        notificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked && !isNotificationSettingOn()) {
+                    // Turn notifications on
+                    Log.d(getString(R.string.log_tag), "Turning notifications on");
+                    setNotificationSetting(true);
+                    Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
+                    startService(startServiceIntent);
+                } else if (!isChecked && isNotificationSettingOn()) {
+                    // Turn notifications off
+                    Log.d(getString(R.string.log_tag), "Turning notifications off");
+                    setNotificationSetting(false);
+                    stopService(new Intent(getApplicationContext(), NotificationService.class));
+                }
+            }
+        });
+
+        radiusSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView tv = (TextView) findViewById(R.id.radius_setting_text);
+                tv.setText(progress + " meters");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int value = seekBar.getProgress();
+                Log.d(getString(R.string.log_tag), "set radius setting " + value);
+                setRadiusSetting(seekBar.getProgress());
+            }
+        });
+
+        snoozeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView tv = (TextView) findViewById(R.id.snooze_setting_text);
+                tv.setText(progress + " minutes");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int value = seekBar.getProgress();
+                Log.d(getString(R.string.log_tag), "set snooze setting " + value);
+                setSnoozeSetting(value);
+            }
+        });
+
+        // Prevent left swipe on seek bar to close the drawer
+        radiusSeekbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                radiusSeekbar.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+        snoozeSeekbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                snoozeSeekbar.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        // Settings menu button callback
+        ImageView menuIcon = (ImageView) findViewById(R.id.menu_button);
+        menuIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View drawer = findViewById(R.id.sliding_drawer);
+                DrawerLayout root = (DrawerLayout) findViewById(R.id.root_layout);
+                root.openDrawer(drawer);
+            }
+        });
+
+        // Initialize settings UI controls according to saved settings
+        initializeSettingsUI();
+
         // Get a db handle
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
@@ -122,10 +216,8 @@ public class HomeActivity extends AppCompatActivity {
         // Register the list view to create context menus when list items are long pressed
         registerForContextMenu(listView);
 
-        // Initialize the preferences
-        preferences = getPreferences(Context.MODE_PRIVATE);
-
-
+        // Need to ask permission in Android devices 6.0 (API 23) or higher
+        askUserForLocationPermission();
     }
 
     @Override
@@ -148,69 +240,13 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(getString(R.string.log_tag), "onDestroy()");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(getString(R.string.log_tag), "onCreateOptionsMenu()");
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.home_menu, menu);
-        super.onCreateOptionsMenu(menu);
-        settingsMenu = menu;
-
-        //if (hasLocationPermission) {
-        //    initializeNotificationService();
-        //}
-
-        // Need to ask permission in Android devices 6.0 (API 23) or higher
-        askUserForLocationPermission();
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (hasLocationPermission) {
-            switch (menuItem.getItemId()) {
-                case R.id.action_notifications:
-                    // Check the current notification setting, and switch it
-                    boolean isNotificationsOn = isNotificationSettingOn();
-
-                    if (isNotificationsOn) {
-                        // Turn notifications off
-                        Log.d(getString(R.string.log_tag), "Turning notifications off");
-                        stopService(new Intent(getApplicationContext(), NotificationService.class));
-
-                        menuItem.setTitle(getString(R.string.turn_notifications_on));
-                    } else {
-                        // Turn notifications on
-                        Log.d(getString(R.string.log_tag), "Turning notifications on");
-                        Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
-                        startService(startServiceIntent);
-
-                        menuItem.setTitle(getString(R.string.turn_notifications_off));
-                    }
-
-                    setNotificationSetting(!isNotificationsOn);
-                    break;
-
-                default:
-                    Log.d(getString(R.string.log_tag), "unknown menu item clicked");
-                    return super.onOptionsItemSelected(menuItem);
-            }
-        } else {
-            Toast.makeText(this ,"You have not granted this app permission to access your location", Toast.LENGTH_LONG).show();
-        }
-
-        return true;
-    }
-
     private void initializeNotificationService() {
-        MenuItem item = (MenuItem) settingsMenu.findItem(R.id.action_notifications);
-
         // Start the notification service if it the first time opening the app
         boolean isFirstLaunch = preferences.getBoolean(getString(R.string.first_app_launch), true);
         if (isFirstLaunch) {
             // Start the notification service
             Log.d(getString(R.string.log_tag), "First launch, starting notification service");
+            setNotificationSetting(true);
             Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
             startService(startServiceIntent);
 
@@ -220,10 +256,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // Set the correct notification setting title based on preferences
         if (isNotificationSettingOn()) {
-            item.setTitle(getString(R.string.turn_notifications_off));
+            notificationSwitch.setChecked(true);
             Log.d(getString(R.string.log_tag), "Notifications are on");
         } else {
-            item.setTitle(getString(R.string.turn_notifications_on));
+            notificationSwitch.setChecked(false);
             Log.d(getString(R.string.log_tag), "Notifications are off");
         }
     }
@@ -321,6 +357,24 @@ public class HomeActivity extends AppCompatActivity {
         preferences.edit().putBoolean(getString(R.string.notification_setting), value).apply();
     }
 
+    private int getRadiusSetting() {
+        int defaultValue = getResources().getInteger(R.integer.default_radius_setting);
+        return preferences.getInt(getString(R.string.radius_setting), defaultValue);
+    }
+
+    private void setRadiusSetting(int value) {
+        preferences.edit().putInt(getString(R.string.radius_setting), value).apply();
+    }
+
+    private int getSnoozeSetting() {
+        int defaultValue = getResources().getInteger(R.integer.default_snooze_setting);
+        return preferences.getInt(getString(R.string.snooze_setting), defaultValue);
+    }
+
+    private void setSnoozeSetting(int value) {
+        preferences.edit().putInt(getString(R.string.snooze_setting), value).apply();
+    }
+
     private void askUserForLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -378,5 +432,13 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void initializeSettingsUI() {
+        int radius = getRadiusSetting();
+        int snooze = getSnoozeSetting();
+
+        radiusSeekbar.setProgress(radius);
+        snoozeSeekbar.setProgress(snooze);
     }
 }
