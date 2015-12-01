@@ -149,6 +149,13 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
         }
     }
 
+    // Edits a reminder item in the DB
+    public void editItem(String itemName, ArrayList<Category> categories) {
+        // categories is the new set of categories selected by user
+        // need to clear out / replace existing categories AND itemName
+
+    }
+
     // Deletes a reminder item from the DB.
     // If 'item' is not present in the DB, nothing will happen.
     public void deleteItem(ReminderItem item) {

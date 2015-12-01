@@ -206,10 +206,14 @@ public class HomeActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         // Set the click listeners for the list
+        // single click/tap on item will go to item's edit page
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(getString(R.string.log_tag), "Position " + position);
+                Log.d(getString(R.string.log_tag), "Item " + position + " on list going to edit page.");
+                Intent intent = new Intent(HomeActivity.this, EditTextActivity.class);
+                intent.putExtra("position_id",position);
+                startActivity(intent);
             }
         });
 

@@ -35,6 +35,11 @@
             android:label="Add New Item"
             android:windowSoftInputMode="stateAlwaysVisible">
         </activity>
+
+        <activity android:name=".EditTextActivity"
+            android:label="Edit Item"
+            android:windowSoftInputMode="stateAlwaysVisible">
+        </activity>
     </application>
 
 </manifest>

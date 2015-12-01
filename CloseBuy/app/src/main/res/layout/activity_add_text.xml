@@ -53,21 +53,6 @@
         android:layout_centerHorizontal="true"
         android:onClick="onCheckboxClicked"/>
 
-
-
-    <Button
-        android:id="@+id/btnDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Done"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="98dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/edit_message"
-        android:background="#ff2a56c6"
-        android:textColor="#ffffff" />
-
     <CheckBox
         android:layout_width="126dp"
         android:layout_height="wrap_content"
@@ -110,4 +95,16 @@
         android:layout_alignStart="@+id/pharmacy"
         android:onClick="onCheckboxClicked"/>
 
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Done"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="98dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/edit_message"
+        android:background="#ff2a56c6"
+        android:textColor="#ffffff" />
 </RelativeLayout>

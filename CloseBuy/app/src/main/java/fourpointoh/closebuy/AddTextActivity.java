@@ -91,7 +91,8 @@ public class AddTextActivity extends AppCompatActivity {
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
         boolean checked = ((CheckBox) view).isChecked();
-
+        Log.d(getString(R.string.log_tag), "checkbox " + view.getId() + " clicked!");
+        Log.d(getString(R.string.log_tag), "R.id.grocery =  " + R.id.grocery);
         // Check which checkbox was clicked
         switch(view.getId()) {
             case R.id.grocery:
