@@ -9,30 +9,28 @@
     <!--Toolbar title-->
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:layout_toRightOf="@+id/menu_button"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:gravity="bottom"
         android:text="Reminders"
-        android:textSize="26sp"
-        android:textColor="#FFFFFF" />
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium"
+        android:layout_toEndOf="@+id/menu_button"
+        android:layout_centerVertical="true"/>
 
     <!--Menu icon button-->
-    <!--TODO: Crop the ic_menu png image.
-    The menu icon png has padding itself, so the icon may not be 16dp from edge of screen according
-    to Google app bar design spec.-->
     <RelativeLayout
         android:id="@+id/menu_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="4dp"
         android:layout_marginLeft="4dp"
+        android:layout_centerVertical="true"
         android:gravity="center">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_menu"/>
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_settings_menu"/>
     </RelativeLayout>
 
 </RelativeLayout>
