@@ -179,8 +179,8 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Settings menu button callback
-        ImageView menuIcon = (ImageView) findViewById(R.id.menu_button);
-        menuIcon.setOnClickListener(new View.OnClickListener() {
+        View menuButton = (View) findViewById(R.id.menu_button);
+        menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View drawer = findViewById(R.id.sliding_drawer);

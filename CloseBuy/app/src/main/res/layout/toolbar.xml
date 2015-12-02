@@ -2,29 +2,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:gravity="bottom"
     android:elevation="4dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:background="@color/colorPrimary"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
+    <!--Toolbar title-->
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="12dp"
-        android:paddingStart="16dp"
-        android:text="CloseBbuy"
-        android:textSize="26dp"
+        android:layout_height="44dp"
+        android:layout_toRightOf="@+id/menu_button"
+        android:layout_marginLeft="8dp"
+        android:gravity="bottom"
+        android:text="Reminders"
+        android:textSize="26sp"
         android:textColor="#FFFFFF" />
 
-    <ImageView
+    <!--Menu icon button-->
+    <!--TODO: Crop the ic_menu png image.
+    The menu icon png has padding itself, so the icon may not be 16dp from edge of screen according
+    to Google app bar design spec.-->
+    <RelativeLayout
         android:id="@+id/menu_button"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:paddingRight="16dp"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_menu"/>
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_menu"/>
+    </RelativeLayout>
 
 </RelativeLayout>
