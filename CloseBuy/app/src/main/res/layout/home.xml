@@ -7,53 +7,49 @@
         layout="@layout/toolbar" />
 
     <RelativeLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/my_toolbar">
 
-        <ListView
-            android:id="@+id/item_list"
+        <!--Scrollable reminder lists-->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/add_button">
+
+            <ListView
+                android:id="@+id/item_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/no_reminders"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No Reminders"
             android:layout_centerHorizontal="true"
             android:textSize="24sp" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+        <!--Add button-->
+        <RelativeLayout
+            android:id="@+id/add_button"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignEnd="@+id/item_list"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp" />
+            android:elevation="4dp">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_photo"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_alignEnd="@+id/item_list"
-            android:layout_above="@+id/add_text"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_text"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_alignEnd="@+id/item_list"
-            android:layout_above="@+id/add"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="25dp"
+                android:text="Add a reminder..."
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/colorListItemText" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

@@ -55,51 +55,13 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize the preferences
         preferences = getPreferences(Context.MODE_PRIVATE);
 
-        // Set the button pictures and click handlers
-        FloatingActionButton add = (FloatingActionButton) findViewById(R.id.add);
-        FloatingActionButton addText = (FloatingActionButton) findViewById(R.id.add_text);
-        FloatingActionButton addPhoto = (FloatingActionButton) findViewById(R.id.add_photo);
-
-        add.setImageResource(R.drawable.add_image);
-        addText.setImageResource(R.drawable.add_text_image);
-        addPhoto.setImageResource(R.drawable.add_photo_image);
-
+        // Set the add button click handler
+        View add = (View) findViewById(R.id.add_button);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(getString(R.string.log_tag), "Add button clicked");
-                FloatingActionButton addText = (FloatingActionButton) findViewById(R.id.add_text);
-                FloatingActionButton addPhoto = (FloatingActionButton) findViewById(R.id.add_photo);
-
-                if (addText.getVisibility() == View.GONE) {
-                    addText.setVisibility(View.VISIBLE);
-                    addPhoto.setVisibility(View.VISIBLE);
-                } else {
-                    addText.setVisibility(View.GONE);
-                    addPhoto.setVisibility(View.GONE);
-                }
-
-            }
-        });
-
-        addText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(getString(R.string.log_tag), "Add text button clicked");
                 Intent intent = new Intent(HomeActivity.this, AddTextActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        addPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(getString(R.string.log_tag), "Add photo button clicked");
-                Toast.makeText(
-                        getApplicationContext(),
-                        getString(R.string.feature_not_ready),
-                        Toast.LENGTH_LONG
-                ).show();
             }
         });
 
@@ -230,11 +192,6 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(getString(R.string.log_tag), "onResume()");
 
         updateList();
-
-        FloatingActionButton addText = (FloatingActionButton) findViewById(R.id.add_text);
-        FloatingActionButton addPhoto = (FloatingActionButton) findViewById(R.id.add_photo);
-        addText.setVisibility(View.GONE);
-        addPhoto.setVisibility(View.GONE);
     }
 
     @Override
