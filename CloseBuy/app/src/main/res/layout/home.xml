@@ -10,12 +10,14 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/my_toolbar">
+        android:layout_below="@id/my_toolbar"
+        android:gravity="top">
 
         <!--Scrollable reminder lists-->
         <LinearLayout
+            android:id="@+id/list_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_above="@+id/add_button">
 
             <ListView
@@ -24,6 +26,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!--No reminder message-->
         <TextView
             android:id="@+id/no_reminders"
             android:layout_width="wrap_content"
@@ -31,6 +34,14 @@
             android:text="No Reminders"
             android:layout_centerHorizontal="true"
             android:textSize="24sp" />
+
+
+        <!--Shadow on top of the add button-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_above="@id/add_button"
+            android:background="@drawable/top_shadow"/>
 
         <!--Add button-->
         <RelativeLayout
