@@ -5,13 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Paint;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,7 +32,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements ReminderItemActionListener {
 
     private final int CONTEXT_MENU_ID_DELETE = 0;
     private final int CONTEXT_MENU_ID_DISABLE = 1;
@@ -39,12 +43,17 @@ public class HomeActivity extends AppCompatActivity {
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
+    private ListView listView;
     private DbHandle dbHandle;
     private SharedPreferences preferences;
 
     private Switch notificationSwitch;
     private SeekBar radiusSeekbar;
     private SeekBar snoozeSeekbar;
+
+    private boolean isSlideMenuOpen = false;
+    private int slideMenuWidth = 0;
+    private int currentSlideMenuListPosition;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +125,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int value = seekBar.getProgress();
@@ -161,7 +171,86 @@ public class HomeActivity extends AppCompatActivity {
         reminderItems = new ArrayList<ReminderItem>();
 
         // Get the list view
-        ListView listView = (ListView) findViewById(R.id.item_list);
+        listView = (ListView) findViewById(R.id.item_list);
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            int downX;
+            int maxMenuWidth = (int) getResources().getDimension(R.dimen.slide_menu_width);
+
+            // WARNING: Overriding this method kills the scroll functionality
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int position = listView.pointToPosition((int) event.getX(), (int) event.getY());
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Close the menu if user taps on a different item
+                        if (isSlideMenuOpen && position != currentSlideMenuListPosition) {
+                            slideMenuWidth = 0;
+                            isSlideMenuOpen = false;
+                            adjustSlideMenuListViewLayouts();
+                        }
+
+                        currentSlideMenuListPosition = position;
+                        downX = (int) event.getX();
+//                        Log.d("log_tag", "downX = " + downX);
+//                        Log.d("log_tag", "max width = " + maxMenuWidth);
+//                        Log.d("log_tag", "menuWidth = " + slideMenuWidth);
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+//                        Log.d("log_tag", "upX = " + event.getX());
+
+                        if (isSlideMenuOpen) {
+                            // Did the swipe close the menu?
+                            if (slideMenuWidth > 0) {
+                                // snap menu back open
+                                slideMenuWidth = maxMenuWidth;
+                            } else {
+                                isSlideMenuOpen = false;
+                                Log.d("log_tag", "menu is closed");
+                            }
+                        } else {
+                            // Did the swipe open the menu?
+                            if (slideMenuWidth == maxMenuWidth) {
+                                isSlideMenuOpen = true;
+                                Log.d("log_tag", "menu is opened");
+                            } else {
+                                // snap menu back closed
+                                slideMenuWidth = 0;
+                            }
+                        }
+
+                        adjustSlideMenuListViewLayouts();
+
+//                        Log.d("log_tag", "menuWidth = " + slideMenuWidth);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        // Treat opening swipe x axis as positive (left+, right-)
+                        int totalXDelta = downX - (int) event.getX();
+
+                        if (!isSlideMenuOpen) {
+                            if (totalXDelta > 0) {
+                                slideMenuWidth = Math.min(maxMenuWidth, totalXDelta);
+                            } else {
+                                slideMenuWidth = 0;
+                            }
+                        } else {
+                            if (totalXDelta < 0) {
+                                slideMenuWidth = Math.max(0, maxMenuWidth + totalXDelta);
+                            } else {
+                                slideMenuWidth = maxMenuWidth;
+                            }
+                        }
+
+                        adjustSlideMenuListViewLayouts();
+
+                        break;
+                    default:
+                        Log.d("log_tag", "listview onTouch() Other");
+                }
+                return true;
+            }
+        });
 
         // Define and set the adapter
         adapter = new ReminderItemArrayAdapter(this, R.layout.list_item, reminderItems);
@@ -179,11 +268,40 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        // Register callbacks for item deletion
+        adapter.setOnItemActionCallbacks(this);
+
         // Register the list view to create context menus when list items are long pressed
         registerForContextMenu(listView);
 
         // Need to ask permission in Android devices 6.0 (API 23) or higher
         askUserForLocationPermission();
+    }
+
+    private void closeItemSlideMenu() {
+        isSlideMenuOpen = false;
+        slideMenuWidth = 0;
+        adjustSlideMenuListViewLayouts();
+    }
+
+    private void adjustSlideMenuListViewLayouts() {
+        // Get the corresponding views
+        View v = listView.getChildAt(currentSlideMenuListPosition - listView.getFirstVisiblePosition());
+        if (v == null)
+            Log.d("log_tag", "view is null");
+
+        View content = v.findViewById(R.id.item_name);
+        View menu = v.findViewById(R.id.slide_menu);
+
+        if (content == null) Log.d("log_tag", "content null");
+        if (menu == null) Log.d("log_tag", "menu null");
+
+        content.layout(-slideMenuWidth, content.getTop(),
+                content.getWidth() - slideMenuWidth, v.getMeasuredHeight());
+
+        menu.layout(content.getWidth() - slideMenuWidth, menu.getTop(),
+                content.getWidth() + menu.getWidth() - slideMenuWidth,
+                menu.getBottom());
     }
 
     @Override
@@ -257,23 +375,40 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteReminder(int arrayAdapterPosition) {
+    public void deleteReminder(int arrayAdapterPosition) {
         Log.d(getString(R.string.log_tag), "User is deleting reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
         reminderItems.remove(arrayAdapterPosition);
+        closeItemSlideMenu();
         dbHandle.deleteItem(item);
         updateList();
     }
 
-    private void disableReminder(int arrayAdapterPosition) {
+    public void disableReminder(int arrayAdapterPosition) {
         Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+
+        // Change the UI on that item
+        TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
+        v.setPaintFlags(v.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        v.setTextColor(getResources().getColor(R.color.colorDisabledListItemText));
+        closeItemSlideMenu();
+
+        // Update the data representation
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
         dbHandle.disableItem(item);
         updateList();
     }
 
-    private void enableReminder(int arrayAdapterPosition) {
-        Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+    public void enableReminder(int arrayAdapterPosition) {
+        Log.d(getString(R.string.log_tag), "User is enabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+
+        // Change the UI on that item
+        TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
+        v.setPaintFlags(v.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        v.setTextColor(getResources().getColor(R.color.colorListItemText));
+        closeItemSlideMenu();
+
+        // Update the data representation
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
         dbHandle.enableItem(item);
         updateList();
@@ -401,5 +536,19 @@ public class HomeActivity extends AppCompatActivity {
 
         radiusSeekbar.setProgress(radius);
         snoozeSeekbar.setProgress(snooze);
+    }
+
+    public static int dp2px(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return (int)px;
+    }
+
+    public static int px2dp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return (int)dp;
     }
 }

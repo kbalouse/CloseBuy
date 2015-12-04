@@ -3,6 +3,7 @@ package fourpointoh.closebuy;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,22 +18,23 @@ import java.util.ArrayList;
  */
 public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
     private ArrayList<ReminderItem> items;
+    private Context context;
 
-    public ReminderItemArrayAdapter(Context context, int textViewIdResource, ArrayList<ReminderItem> inputItemList) {
-        super(context, textViewIdResource, inputItemList);
+    ReminderItemActionListener listener = null;
+
+    public ReminderItemArrayAdapter(Context contextIn, int textViewIdResource, ArrayList<ReminderItem> inputItemList) {
+        super(contextIn, textViewIdResource, inputItemList);
         items = inputItemList;
+        context = contextIn;
+    }
+
+    public void setOnItemActionCallbacks(ReminderItemActionListener itemListener) {
+        listener = itemListener;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View v = convertView;
-        Context appContext = parent.getContext();
-
-        if (appContext == null) {
-            // Log.d("CloseBuyLogTag", "appContext is null, getting view for index " + position);
-        } else {
-            // Log.d(appContext.getString(R.string.log_tag), "getting view for index " + position + " item " + items.get(position).itemName);
-        }
 
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,8 +47,43 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
         // Give content to the view according to the given item
         TextView textView = (TextView) v.findViewById(R.id.item_name);
         textView.setText(item.itemName);
-        if (!item.enabled) textView.setTextColor(Color.GRAY);
-        else textView.setTextColor(Color.BLACK);
+        if (item.enabled) {
+            textView.setTextColor(context.getResources().getColor(R.color.colorListItemText));
+            if ((textView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
+                textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            }
+        } else {
+            textView.setTextColor(context.getResources().getColor(R.color.colorDisabledListItemText));
+            if ((textView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) == 0) {
+                textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+        }
+
+        // Set onclick listeners for the slide menu action buttons
+        View undoButton = v.findViewById(R.id.undo_button);
+        undoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("log_tag", "Undo item " + position);
+                if (listener != null) {
+                    if (items.get(position).enabled) {
+                        listener.disableReminder(position);
+                    } else {
+                        listener.enableReminder(position);
+                    }
+                }
+            }
+        });
+        View deleteButton = v.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("log_tag", "Delete item " + position);
+                if (listener != null) {
+                    listener.deleteReminder(position);
+                }
+            }
+        });
 
         return v;
     }
