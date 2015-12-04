@@ -23,6 +23,7 @@ public class EditTextActivity extends AppCompatActivity {
     private EditText editText;
     private Button doneButton;
     private ArrayList<Category> checkedCategories;
+    private int item_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class EditTextActivity extends AppCompatActivity {
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
         Intent intent = getIntent();
         // get data via the key = "position_id"
-        int item_id = intent.getIntExtra("position_id", 0);
+        item_id = intent.getIntExtra("position_id", 0);
         Log.d("log_tag", "THE ITEM ID IS " + item_id);
         // pull reminder item from DB based on listview position id
         itemList = dbHandle.getAllItems(); // write function for getItemByID
@@ -56,7 +57,14 @@ public class EditTextActivity extends AppCompatActivity {
                 String name = editText.getText().toString();
 
                 // update item in DB, boolean "update" = true
-                dbHandle.editItem(name, checkedCategories);
+                ReminderItem edited = new ReminderItem();
+                edited.categories = checkedCategories;
+                edited.inStore = true;
+                edited.itemName = name;
+                edited.enabled = true;
+                edited.id = item_id;
+
+                dbHandle.editItem(edited);
 
                 // Return back to the home screen
                 Intent intent = new Intent(EditTextActivity.this, HomeActivity.class);

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class ReminderItem {
     public int id;
     public boolean enabled;
+    public boolean inStore;
     public String itemName;
     public ArrayList<Category> categories;
 }

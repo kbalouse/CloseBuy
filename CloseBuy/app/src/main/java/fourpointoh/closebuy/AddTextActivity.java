@@ -78,7 +78,7 @@ public class AddTextActivity extends AppCompatActivity {
                 String name = editText.getText().toString();
 
                 // Add the item to the db
-                dbHandle.addItem(name, checkedCategories);
+                dbHandle.addItem(name, true, checkedCategories);
 
                 // Return back to the home screen
                 Intent intent = new Intent(AddTextActivity.this, HomeActivity.class);

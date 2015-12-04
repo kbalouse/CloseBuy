@@ -15,10 +15,10 @@ public interface DbHandle {
 
     // Adds a reminder item to the DB.
     // Duplicate (item name, category list) reminders can be added to the DB.
-    void addItem(String itemName, ArrayList<Category> categories);
+    void addItem(String itemName, boolean inStore, ArrayList<Category> categories);
 
     // Edits a reminder item in the DB.
-    void editItem(String itemName, ArrayList<Category> categories);
+    void editItem(ReminderItem item);
 
     // Deletes a reminder item from the DB.
     // If 'item' is not present in the DB, nothing will happen.

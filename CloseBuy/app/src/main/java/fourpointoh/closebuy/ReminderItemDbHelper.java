@@ -15,7 +15,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     private static ReminderItemDbHelper Instance;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "ReminderItem.db";
 
     // Table names
@@ -31,6 +31,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     public static final String ITEM_ID = "item_id";
     public static final String ITEM_NAME = "name";
     public static final String ITEM_ENABLED = "enabled";
+    public static final String ITEM_IN_STORE = "in_store";
 
     // Schema creation SQL
     /*
@@ -45,7 +46,8 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
             "CREATE TABLE IF NOT EXISTS " + TABLE_ITEM + " (" +
                     ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     ITEM_NAME + " TEXT," +
-                    ITEM_ENABLED + " INTEGER" +
+                    ITEM_ENABLED + " INTEGER," +
+                    ITEM_IN_STORE + " INTEGER" +
                     " )";
 
     private static final String SQL_CREATE_CONTAINS_TABLE =
@@ -95,7 +97,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     // Returns all reminder items in the DB.
     public ArrayList<ReminderItem> getAllItems() {
         ArrayList<ReminderItem> itemList = new ArrayList<>();
-        String selectQuery = "SELECT " + TABLE_ITEM + "." + ITEM_ID + "," + ITEM_NAME + "," + ITEM_ENABLED + "," + CATEGORY_ID +
+        String selectQuery = "SELECT " + TABLE_ITEM + "." + ITEM_ID + "," + ITEM_NAME + "," + ITEM_IN_STORE + "," + ITEM_ENABLED + "," + CATEGORY_ID +
                             " FROM " + TABLE_ITEM + ", " + TABLE_CONTAINS +
                             " WHERE " + TABLE_ITEM + "." + ITEM_ID + "=" + TABLE_CONTAINS + "." + ITEM_ID;
 
@@ -111,6 +113,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
                     item = new ReminderItem();
                     item.id = cursor.getInt((cursor.getColumnIndex(ITEM_ID)));
                     item.enabled = cursor.getInt((cursor.getColumnIndex(ITEM_ENABLED))) == 1;
+                    item.inStore = cursor.getInt((cursor.getColumnIndex(ITEM_IN_STORE))) == 1;
                     item.itemName = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
                     item.categories = new ArrayList<Category>();
                     item.categories.add(categories[cursor.getInt(cursor.getColumnIndex(CATEGORY_ID)) - 1]);
@@ -134,11 +137,12 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
 
     // Adds a reminder item to the DB.
     // Duplicate (item name, category list) reminders can be added to the DB.
-    public void addItem(String itemName, ArrayList<Category> categories) {
+    public void addItem(String itemName, boolean inStore, ArrayList<Category> categories) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ITEM_NAME, itemName);
         values.put(ITEM_ENABLED, 1);
+        values.put(ITEM_IN_STORE, inStore);
         long itemId = db.insert(TABLE_ITEM, null, values);
 
         for (Category cat : categories) {
@@ -150,10 +154,26 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     }
 
     // Edits a reminder item in the DB
-    public void editItem(String itemName, ArrayList<Category> categories) {
+    public void editItem(ReminderItem item) {
         // categories is the new set of categories selected by user
         // need to clear out / replace existing categories AND itemName
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CONTAINS, ITEM_ID + " = ?",
+                new String[] { String.valueOf(item.id) });
 
+        ContentValues values = new ContentValues();
+        values.put(ITEM_NAME, item.itemName);
+        values.put(ITEM_ENABLED, item.enabled);
+        values.put(ITEM_IN_STORE, item.inStore);
+        long itemId = db.update(TABLE_ITEM, values, ITEM_ID + " = ?",
+                new String[]{String.valueOf(item.id)});
+
+        for (Category cat : item.categories) {
+            ContentValues catValues = new ContentValues();
+            catValues.put(CATEGORY_ID, cat.getId());
+            catValues.put(ITEM_ID, itemId);
+            db.insert(TABLE_CONTAINS, null, catValues);
+        }
     }
 
     // Deletes a reminder item from the DB.
