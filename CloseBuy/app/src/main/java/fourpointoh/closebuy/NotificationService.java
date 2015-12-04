@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -132,6 +133,10 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
         request.setLongitude(longitude);
         request.setRadius((double) 100);
 
+        Place currentLoc = new Place();
+        currentLoc.setLatitude(latitude);
+        currentLoc.setLongitude(longitude);
+
         // Query DB to get all categories
         ReminderItemDbHelper db = ReminderItemDbHelper.getInstance(appContext);
         ArrayList<ReminderItem> items = db.getAllItems();
@@ -178,22 +183,38 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
 
             message = message.substring(0, message.length() - 2) + "?";
             Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-            fireNotification(appContext, "CloseBuy", message, R.drawable.add_text_image);
+            fireNotification(appContext, "CloseBuy", message, currentLoc, p, R.drawable.add_text_image);
         }
+        /*
+        Place p = new Place();
+        p.setLatitude(42.2797577);
+        p.setLongitude(-83.7408239);
+        fireNotification(appContext, "CloseBuy", "You near a store?", currentLoc, p, R.drawable.add_text_image);
+        */
     }
 
-    private void fireNotification(Context context, String title, String description, int iconResource) {
+    private void fireNotification(Context context, String title, String description, Place start, Place destination, int iconResource) {
         // Create the pending intent to start the home page activity
         Intent homePageIntent = new Intent(context, HomeActivity.class);
-        PendingIntent pending = PendingIntent.getActivity(context, 0, homePageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingHomePage = PendingIntent.getActivity(context, 0, homePageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String mapsUrl = "http://maps.google.com/maps?saddr=" + start.getLatitude() + "," + start.getLongitude() +
+                "&daddr=" + destination.getLatitude() + "," + destination.getLongitude();
+        Intent mapIntent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(mapsUrl));
+        PendingIntent pendingMaps = PendingIntent.getActivity(context, 0, mapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Create the notification builder and set the appropriate fields
         Notification.Builder builder = new Notification.Builder(context);
         builder.setContentTitle(title);
         builder.setContentText(description);
         builder.setSmallIcon(iconResource);
-        builder.setContentIntent(pending);
+        builder.setContentIntent(pendingHomePage);
         builder.setStyle(new Notification.BigTextStyle().bigText(description));
+        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Buy",  pendingHomePage);
+        builder.addAction(android.R.drawable.ic_lock_idle_alarm, "Sleep",  pendingHomePage);
+        builder.addAction(android.R.drawable.ic_menu_directions, "Map", pendingMaps);
+        builder.setVibrate(new long[]{1000, 1000});
+        builder.setAutoCancel(true);
 
         // Fetch the notification service and fire the notification
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

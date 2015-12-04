@@ -46,6 +46,8 @@ public class NearbyStoreUpdate extends BroadcastReceiver {
         builder.setSmallIcon(iconResource);
         builder.setContentIntent(pending);
         builder.setStyle(new Notification.BigTextStyle().bigText(description));
+        builder.addAction(android.R.drawable.ic_menu_view, "View details", pending);
+
 
         // Fetch the notification service and fire the notification
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
