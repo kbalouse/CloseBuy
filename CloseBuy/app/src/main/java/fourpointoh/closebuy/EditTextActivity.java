@@ -55,6 +55,9 @@ public class EditTextActivity extends AppCompatActivity {
             Log.d(getString(R.string.log_tag), "ERROR: item not found in db");
         }
 
+        // Initialize the checked boxes list with the categories that the item has
+        checkedCategories = item.categories;
+
         // update view with item pulled from DB
         updateView(item);
 
