@@ -88,8 +88,7 @@ public class AddTextActivity extends AppCompatActivity {
                 dbHandle.addItem(name, true, checkedCategories);
 
                 // Return back to the home screen
-                Intent intent = new Intent(AddTextActivity.this, HomeActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 

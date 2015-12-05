@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import java.util.ArrayList;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 
 /**
@@ -68,8 +69,15 @@ public class EditTextActivity extends AppCompatActivity {
                 Log.d(getString(R.string.log_tag), "Done button clicked");
 
                 // Enforce that the necessary fields are non empty
-                // TODO
                 String name = editText.getText().toString();
+                if (name.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Item must have a non-empty name.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (checkedCategories.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Item must be associated with at least 1 category.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // update item in DB, boolean "update" = true
                 ReminderItem edited = new ReminderItem();
@@ -82,9 +90,7 @@ public class EditTextActivity extends AppCompatActivity {
                 dbHandle.editItem(edited);
 
                 // Return back to the home screen
-                Intent intent = new Intent(EditTextActivity.this, HomeActivity.class);
-                startActivity(intent);
-
+                finish();
             }
         });
 

@@ -165,13 +165,13 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
         values.put(ITEM_NAME, item.itemName);
         values.put(ITEM_ENABLED, item.enabled);
         values.put(ITEM_IN_STORE, item.inStore);
-        long itemId = db.update(TABLE_ITEM, values, ITEM_ID + " = ?",
+        db.update(TABLE_ITEM, values, ITEM_ID + " = ?",
                 new String[]{String.valueOf(item.id)});
 
         for (Category cat : item.categories) {
             ContentValues catValues = new ContentValues();
             catValues.put(CATEGORY_ID, cat.getId());
-            catValues.put(ITEM_ID, itemId);
+            catValues.put(ITEM_ID, item.id);
             db.insert(TABLE_CONTAINS, null, catValues);
         }
     }
@@ -182,6 +182,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ITEM, ITEM_ID + " = ?",
                 new String[] { String.valueOf(item.id) });
+        // TODO: delete entries in the contains table with the same item id
     }
 
     public void disableItem(ReminderItem item) {
