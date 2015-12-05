@@ -20,7 +20,7 @@
             android:layout_height="fill_parent"
             android:layout_above="@+id/add_button">
 
-            <ListView
+            <fourpointoh.closebuy.SwipeMenuListView
                 android:id="@+id/item_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

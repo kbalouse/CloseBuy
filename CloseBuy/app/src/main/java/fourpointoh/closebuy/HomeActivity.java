@@ -43,17 +43,13 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
 
     private ArrayList<ReminderItem> reminderItems;
     private ReminderItemArrayAdapter adapter;
-    private ListView listView;
+    private SwipeMenuListView listView;
     private DbHandle dbHandle;
     private SharedPreferences preferences;
 
     private Switch notificationSwitch;
     private SeekBar radiusSeekbar;
     private SeekBar snoozeSeekbar;
-
-    private boolean isSlideMenuOpen = false;
-    private int slideMenuWidth = 0;
-    private int currentSlideMenuListPosition;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,137 +167,42 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         reminderItems = new ArrayList<ReminderItem>();
 
         // Get the list view
-        listView = (ListView) findViewById(R.id.item_list);
-        listView.setOnTouchListener(new View.OnTouchListener() {
-            int downX;
-            int maxMenuWidth = (int) getResources().getDimension(R.dimen.slide_menu_width);
-
-            // WARNING: Overriding this method kills the scroll functionality
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int position = listView.pointToPosition((int) event.getX(), (int) event.getY());
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // Close the menu if user taps on a different item
-                        if (isSlideMenuOpen && position != currentSlideMenuListPosition) {
-                            slideMenuWidth = 0;
-                            isSlideMenuOpen = false;
-                            adjustSlideMenuListViewLayouts();
-                        }
-
-                        currentSlideMenuListPosition = position;
-                        downX = (int) event.getX();
-//                        Log.d("log_tag", "downX = " + downX);
-//                        Log.d("log_tag", "max width = " + maxMenuWidth);
-//                        Log.d("log_tag", "menuWidth = " + slideMenuWidth);
-
-                        break;
-                    case MotionEvent.ACTION_UP:
-//                        Log.d("log_tag", "upX = " + event.getX());
-
-                        if (isSlideMenuOpen) {
-                            // Did the swipe close the menu?
-                            if (slideMenuWidth > 0) {
-                                // snap menu back open
-                                slideMenuWidth = maxMenuWidth;
-                            } else {
-                                isSlideMenuOpen = false;
-                                Log.d("log_tag", "menu is closed");
-                            }
-                        } else {
-                            // Did the swipe open the menu?
-                            if (slideMenuWidth == maxMenuWidth) {
-                                isSlideMenuOpen = true;
-                                Log.d("log_tag", "menu is opened");
-                            } else {
-                                // snap menu back closed
-                                slideMenuWidth = 0;
-                            }
-                        }
-
-                        adjustSlideMenuListViewLayouts();
-
-//                        Log.d("log_tag", "menuWidth = " + slideMenuWidth);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        // Treat opening swipe x axis as positive (left+, right-)
-                        int totalXDelta = downX - (int) event.getX();
-
-                        if (!isSlideMenuOpen) {
-                            if (totalXDelta > 0) {
-                                slideMenuWidth = Math.min(maxMenuWidth, totalXDelta);
-                            } else {
-                                slideMenuWidth = 0;
-                            }
-                        } else {
-                            if (totalXDelta < 0) {
-                                slideMenuWidth = Math.max(0, maxMenuWidth + totalXDelta);
-                            } else {
-                                slideMenuWidth = maxMenuWidth;
-                            }
-                        }
-
-                        adjustSlideMenuListViewLayouts();
-
-                        break;
-                    default:
-                        Log.d("log_tag", "listview onTouch() Other");
-                }
-                return true;
-            }
-        });
+        listView = (SwipeMenuListView) findViewById(R.id.item_list);
 
         // Define and set the adapter
         adapter = new ReminderItemArrayAdapter(this, R.layout.list_item, reminderItems);
         listView.setAdapter(adapter);
 
-        // Set the click listeners for the list
-        // single click/tap on item will go to item's edit page
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        SwipeMenuCreator creator = new MySwipeMenuCreator(this);
+        listView.setMenuCreator(creator);
+        listView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+
+        listView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(getString(R.string.log_tag), "Item " + position + " on list going to edit page.");
-                Intent intent = new Intent(HomeActivity.this, EditTextActivity.class);
-                intent.putExtra("position_id",position);
-                startActivity(intent);
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+            switch (index) {
+                case 0:
+                    ReminderItem item = reminderItems.get(position);
+                    if (item.enabled) {
+                        disableReminder(position);
+                    } else {
+                        enableReminder(position);
+                    }
+                    break;
+                case 1:
+                    deleteReminder(position);
+                    break;
+            }
+            // false : close the menu; true : not close the menu
+            return false;
             }
         });
-
-        // Register callbacks for item deletion
-        adapter.setOnItemActionCallbacks(this);
 
         // Register the list view to create context menus when list items are long pressed
         registerForContextMenu(listView);
 
         // Need to ask permission in Android devices 6.0 (API 23) or higher
         askUserForLocationPermission();
-    }
-
-    private void closeItemSlideMenu() {
-        isSlideMenuOpen = false;
-        slideMenuWidth = 0;
-        adjustSlideMenuListViewLayouts();
-    }
-
-    private void adjustSlideMenuListViewLayouts() {
-        // Get the corresponding views
-        View v = listView.getChildAt(currentSlideMenuListPosition - listView.getFirstVisiblePosition());
-        if (v == null)
-            Log.d("log_tag", "view is null");
-
-        View content = v.findViewById(R.id.item_name);
-        View menu = v.findViewById(R.id.slide_menu);
-
-        if (content == null) Log.d("log_tag", "content null");
-        if (menu == null) Log.d("log_tag", "menu null");
-
-        content.layout(-slideMenuWidth, content.getTop(),
-                content.getWidth() - slideMenuWidth, v.getMeasuredHeight());
-
-        menu.layout(content.getWidth() - slideMenuWidth, menu.getTop(),
-                content.getWidth() + menu.getWidth() - slideMenuWidth,
-                menu.getBottom());
     }
 
     @Override
@@ -343,43 +244,10 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         }
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        Log.d(getString(R.string.log_tag), "onCreateContextMenu()");
-        AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-
-        ReminderItem selected = reminderItems.get(adapterInfo.position);
-        menu.setHeaderTitle(selected.itemName);
-        if (selected.enabled)
-            menu.add(0, CONTEXT_MENU_ID_DISABLE, 0, "Disable Reminder"); // groupid, itemid, menu position, title
-        else menu.add(0, CONTEXT_MENU_ID_ENABLE, 0, "Enable Reminder");
-        menu.add(0, CONTEXT_MENU_ID_DELETE, 1, "Delete Reminder");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        Log.d(getString(R.string.log_tag), "onContextItemSelected(): id=" + item.getItemId());
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case CONTEXT_MENU_ID_DISABLE:
-                disableReminder(info.position);
-                return true;
-            case CONTEXT_MENU_ID_ENABLE:
-                enableReminder(info.position);
-                return true;
-            case CONTEXT_MENU_ID_DELETE:
-                deleteReminder(info.position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
     public void deleteReminder(int arrayAdapterPosition) {
         Log.d(getString(R.string.log_tag), "User is deleting reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
         reminderItems.remove(arrayAdapterPosition);
-        closeItemSlideMenu();
         dbHandle.deleteItem(item);
         updateList();
     }
@@ -391,7 +259,6 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
         v.setPaintFlags(v.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         v.setTextColor(getResources().getColor(R.color.colorDisabledListItemText));
-        closeItemSlideMenu();
 
         // Update the data representation
         ReminderItem item = reminderItems.get(arrayAdapterPosition);
@@ -406,7 +273,6 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
         v.setPaintFlags(v.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         v.setTextColor(getResources().getColor(R.color.colorListItemText));
-        closeItemSlideMenu();
 
         // Update the data representation
         ReminderItem item = reminderItems.get(arrayAdapterPosition);

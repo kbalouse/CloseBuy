@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slide_menu"
+    android:layout_width="@dimen/slide_menu_width"
+    android:layout_height="70dp"
+    android:orientation="horizontal">
+
+    <!--Undo button-->
+    <LinearLayout
+        android:id="@+id/undo_button"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@color/colorUndoButton">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/ic_undo"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#FFFFFF"
+            android:text="Undo"/>
+    </LinearLayout>
+
+    <!--delete button-->
+    <LinearLayout
+        android:id="@+id/delete_button"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@color/colorDeleteButton">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/ic_trash"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#FFFFFF"
+            android:text="Delete"/>
+    </LinearLayout>
+</LinearLayout>

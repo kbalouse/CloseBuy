@@ -20,16 +20,10 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
     private ArrayList<ReminderItem> items;
     private Context context;
 
-    ReminderItemActionListener listener = null;
-
     public ReminderItemArrayAdapter(Context contextIn, int textViewIdResource, ArrayList<ReminderItem> inputItemList) {
         super(contextIn, textViewIdResource, inputItemList);
         items = inputItemList;
         context = contextIn;
-    }
-
-    public void setOnItemActionCallbacks(ReminderItemActionListener itemListener) {
-        listener = itemListener;
     }
 
     @Override
@@ -58,32 +52,6 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
                 textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
         }
-
-        // Set onclick listeners for the slide menu action buttons
-        View undoButton = v.findViewById(R.id.undo_button);
-        undoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("log_tag", "Undo item " + position);
-                if (listener != null) {
-                    if (items.get(position).enabled) {
-                        listener.disableReminder(position);
-                    } else {
-                        listener.enableReminder(position);
-                    }
-                }
-            }
-        });
-        View deleteButton = v.findViewById(R.id.delete_button);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("log_tag", "Delete item " + position);
-                if (listener != null) {
-                    listener.deleteReminder(position);
-                }
-            }
-        });
 
         return v;
     }
