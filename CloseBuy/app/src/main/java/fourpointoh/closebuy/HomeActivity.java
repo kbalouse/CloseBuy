@@ -177,24 +177,38 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         listView.setMenuCreator(creator);
         listView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
 
+        // Set the click listeners for the list
+        // single click/tap on item will go to item's edit page
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(getString(R.string.log_tag), "Item " + position + " on list going to edit page.");
+                Intent intent = new Intent(HomeActivity.this, EditTextActivity.class);
+                int itemId = reminderItems.get(position).id;
+                Log.d(getString(R.string.log_tag), "item id: " + itemId);
+                intent.putExtra("position_id", itemId);
+                startActivity(intent);
+            }
+        });
+
         listView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-            switch (index) {
-                case 0:
-                    ReminderItem item = reminderItems.get(position);
-                    if (item.enabled) {
-                        disableReminder(position);
-                    } else {
-                        enableReminder(position);
-                    }
-                    break;
-                case 1:
-                    deleteReminder(position);
-                    break;
-            }
-            // false : close the menu; true : not close the menu
-            return false;
+                switch (index) {
+                    case 0:
+                        ReminderItem item = reminderItems.get(position);
+                        if (item.enabled) {
+                            disableReminder(position);
+                        } else {
+                            enableReminder(position);
+                        }
+                        break;
+                    case 1:
+                        deleteReminder(position);
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
             }
         });
 

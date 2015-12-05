@@ -74,8 +74,15 @@ public class AddTextActivity extends AppCompatActivity {
                 Log.d(getString(R.string.log_tag), "Done button clicked");
 
                 // Enforce that the necessary fields are non empty
-                // TODO
                 String name = editText.getText().toString();
+                if (name.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Item must have a non-empty name.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (checkedCategories.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Item must be associated with at least 1 category.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // Add the item to the db
                 dbHandle.addItem(name, true, checkedCategories);

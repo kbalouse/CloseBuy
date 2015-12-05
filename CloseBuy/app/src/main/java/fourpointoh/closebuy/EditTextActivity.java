@@ -43,8 +43,20 @@ public class EditTextActivity extends AppCompatActivity {
         // pull reminder item from DB based on listview position id
         itemList = dbHandle.getAllItems(); // write function for getItemByID
 
+        // TODO: Just pass the whole ReminderItem to the activity so we don't have to query DB and search
+        ReminderItem item = null;
+        for (ReminderItem i : itemList) {
+            if (i.id == item_id) {
+                item = i;
+                break;
+            }
+        }
+        if (item == null) {
+            Log.d(getString(R.string.log_tag), "ERROR: item not found in db");
+        }
+
         // update view with item pulled from DB
-        updateView(itemList.get(item_id));
+        updateView(item);
 
         // change it to function call later instead of definition
         // unlike AddTextActivity, don't need to add to DB
