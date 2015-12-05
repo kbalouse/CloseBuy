@@ -281,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
     }
 
     private void updateList() {
-        TextView t = (TextView) findViewById(R.id.no_reminders);
+        View noRemindersView = findViewById(R.id.no_reminders);
 
         // Retrieve reminder items from DB
         ArrayList<ReminderItem> refreshedItems = dbHandle.getAllItems();
@@ -304,9 +304,9 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
 
         // Show or hide the "no reminders" text
         if (reminderItems.size() == 0) {
-            t.setVisibility(View.VISIBLE);
+            noRemindersView.setVisibility(View.VISIBLE);
         } else {
-            t.setVisibility(View.GONE);
+            noRemindersView.setVisibility(View.GONE);
         }
     }
 
