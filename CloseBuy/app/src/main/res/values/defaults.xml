@@ -4,6 +4,6 @@
     <integer name="default_radius_setting">75</integer>
     <integer name="default_snooze_setting">120</integer>
 
-    <integer name="radius_max">500</integer>
-    <integer name="snooze_max">360</integer>
+    <integer name="radius_min">10</integer>
+    <integer name="radius_max">150</integer>
 </resources>
