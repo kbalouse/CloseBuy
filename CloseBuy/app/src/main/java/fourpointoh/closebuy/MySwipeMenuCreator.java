@@ -17,31 +17,14 @@ public class MySwipeMenuCreator implements SwipeMenuCreator {
 
     @Override
     public void create(SwipeMenu menu) {
-        // create "open" item
-        SwipeMenuItem openItem = new SwipeMenuItem(context);
-        // set item background
-        openItem.setBackground(new ColorDrawable(context.getResources().getColor(R.color.colorUndoButton)));
-        // set item width
-        openItem.setWidth(dp2px(70));
-        // set item title
-        openItem.setTitle("Undo");
-        // set item title fontsize
-        openItem.setTitleSize(12);
-        // set item title font color
-        openItem.setTitleColor(Color.WHITE);
-        // add to menu
-        menu.addMenuItem(openItem);
+        SwipeMenuItem undoItem = new SwipeMenuItem(context);
+        undoItem.setWidth(dp2px(70));
+        undoItem.setLayoutId(R.layout.undo_menu_item);
+        menu.addMenuItem(undoItem);
 
-        // create "delete" item
-        SwipeMenuItem deleteItem = new SwipeMenuItem(
-                context);
-        // set item background
-        deleteItem.setBackground(new ColorDrawable(context.getResources().getColor(R.color.colorDeleteButton)));
-        // set item width
+        SwipeMenuItem deleteItem = new SwipeMenuItem(context);
         deleteItem.setWidth(dp2px(70));
-        // set a icon
-        deleteItem.setIcon(R.mipmap.ic_trash);
-        // add to menu
+        deleteItem.setLayoutId(R.layout.delete_menu_item);
         menu.addMenuItem(deleteItem);
     }
 

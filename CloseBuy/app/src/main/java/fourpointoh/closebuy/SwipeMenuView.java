@@ -2,10 +2,15 @@ package fourpointoh.closebuy;
 
 import java.util.List;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,25 +49,42 @@ public class SwipeMenuView extends LinearLayout implements OnClickListener {
 	}
 
 	private void addItem(SwipeMenuItem item, int id) {
-		LayoutParams params = new LayoutParams(item.getWidth(),
-				LayoutParams.MATCH_PARENT);
-		LinearLayout parent = new LinearLayout(getContext());
-		parent.setId(id);
-		parent.setGravity(Gravity.CENTER);
-		parent.setOrientation(LinearLayout.VERTICAL);
-		parent.setLayoutParams(params);
-		parent.setBackgroundDrawable(item.getBackground());
-		parent.setOnClickListener(this);
-		addView(parent);
 
-		if (item.getIcon() != null) {
-			parent.addView(createIcon(item));
-		}
-		if (!TextUtils.isEmpty(item.getTitle())) {
-			parent.addView(createTitle(item));
-		}
+        LayoutParams params = new LayoutParams(item.getWidth(),
+                LayoutParams.MATCH_PARENT);
 
-	}
+        if (item.hasCustomLayout()) {
+            LinearLayout parent = createCustomMenuItemLayout(item);
+            parent.setId(id);
+            parent.setLayoutParams(params);
+            parent.setOnClickListener(this);
+            addView(parent);
+        } else {
+            LinearLayout parent = new LinearLayout(getContext());
+            parent.setId(id);
+            parent.setLayoutParams(params);
+            parent.setOnClickListener(this);
+            parent.setGravity(Gravity.CENTER);
+            parent.setOrientation(LinearLayout.VERTICAL);
+            parent.setBackgroundColor(Color.BLUE); // DEBUG
+            parent.setBackgroundDrawable(item.getBackground());
+            addView(parent);
+
+            if (item.getIcon() != null) {
+                parent.addView(createIcon(item));
+            }
+            if (!TextUtils.isEmpty(item.getTitle())) {
+                View v = createTitle(item);
+                parent.addView(v);
+            }
+        }
+    }
+
+    private LinearLayout createCustomMenuItemLayout(SwipeMenuItem item) {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout menuLayout = (LinearLayout) inflater.inflate(item.getLayoutId(), null);
+        return menuLayout;
+    }
 
 	private ImageView createIcon(SwipeMenuItem item) {
 		ImageView iv = new ImageView(getContext());
