@@ -14,6 +14,27 @@ public enum Category {
         return id;
     }
 
+    public String toReadableString() {
+        switch (this) {
+            case GROCERY:
+                return "Grocery";
+            case PHARMACY:
+                return "Pharmacy";
+            case BAKERY:
+                return "Bakery";
+            case CONVENIENCE:
+                return "Convenience";
+            case PET:
+                return "Pet Store";
+            case ELECTRONICS:
+                return "Electronics";
+            case HARDWARE:
+                return "Hardware";
+            default:
+                return "";
+        }
+    }
+
     // Returns the string that is associated with the particular category, according to google's definitions.
     // https://developers.google.com/places/supported_types
     public String toGoogleCategoryString() {

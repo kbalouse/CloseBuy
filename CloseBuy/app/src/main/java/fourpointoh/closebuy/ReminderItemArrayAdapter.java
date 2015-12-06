@@ -32,7 +32,11 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
 
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.list_item, null);
+            v = inflater.inflate(R.layout.list_item, parent, false);
+        } else {
+            // Remove existing category bubbles in this recycled view
+            ViewGroup categoryContainer = (ViewGroup) v.findViewById(R.id.category_container);
+            categoryContainer.removeAllViews();
         }
 
         // Grab the corresponding item
@@ -51,6 +55,24 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
             if ((textView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) == 0) {
                 textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
+        }
+
+        // Add in category bubbles
+        ViewGroup categoryContainer = (ViewGroup) v.findViewById(R.id.category_container);
+        for (int i = 0; i < item.categories.size(); i++) {
+            Category c = item.categories.get(i);
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View bubble = inflater.inflate(R.layout.category_bubble, categoryContainer, false);
+            TextView tv = (TextView) bubble.findViewById(R.id.category_text);
+            tv.setText(c.toReadableString());
+
+            if (System.currentTimeMillis()%2 == 0) {
+                tv.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            } else {
+                tv.setTextColor(context.getResources().getColor(R.color.colorAccent));
+            }
+
+            categoryContainer.addView(bubble);
         }
 
         return v;

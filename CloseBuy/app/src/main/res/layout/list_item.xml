@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="62dp"
+    android:paddingRight="24dp">
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:textSize="26sp"/>
+        android:layout_width="146dp"
+        android:layout_height="62dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="38dp"
+        android:textSize="15sp"
+        android:text="sample"/>
+
+    <LinearLayout
+        android:id="@+id/category_container"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="right">
+
+        <!--Category views are inserted here when the adapter gets views for each list item-->
+
+    </LinearLayout>
 
 </LinearLayout>

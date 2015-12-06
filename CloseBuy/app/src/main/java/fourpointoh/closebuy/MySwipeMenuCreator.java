@@ -26,7 +26,7 @@ public class MySwipeMenuCreator implements SwipeMenuCreator {
         // set item title
         openItem.setTitle("Undo");
         // set item title fontsize
-        openItem.setTitleSize(16);
+        openItem.setTitleSize(12);
         // set item title font color
         openItem.setTitleColor(Color.WHITE);
         // add to menu
