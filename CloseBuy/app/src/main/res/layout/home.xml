@@ -33,7 +33,9 @@
                 <fourpointoh.closebuy.SwipeMenuListView
                     android:id="@+id/nearby_item_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:dividerHeight="1dp"
+                    android:divider="@color/colorListHeader"/>
 
                 <TextView
                     android:id="@+id/in_store_list_header"
@@ -96,7 +98,7 @@
         <RelativeLayout
             android:id="@+id/add_button"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="58dp"
             android:layout_alignParentBottom="true"
             android:elevation="4dp">
 
@@ -106,7 +108,7 @@
                 android:layout_centerVertical="true"
                 android:paddingLeft="25dp"
                 android:text="Add a reminder..."
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:fontFamily="sans-serif-light"
                 android:textColor="@color/colorListItemText" />
         </RelativeLayout>
