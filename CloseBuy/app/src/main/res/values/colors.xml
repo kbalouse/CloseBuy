@@ -12,4 +12,6 @@
 
     <color name="colorUndoButton">#DBDBDB</color>
     <color name="colorDeleteButton">#FF3824</color>
+
+    <color name="myActionBar">#ffffff</color>
 </resources>

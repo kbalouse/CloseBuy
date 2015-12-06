@@ -1,6 +1,7 @@
 package fourpointoh.closebuy;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,33 +15,43 @@ import android.widget.Button;
 import android.view.View;
 import java.util.ArrayList;
 import android.widget.CheckBox;
-
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.content.DialogInterface.OnClickListener;
+import android.app.ActionBar;
+import android.view.Window;
+import android.view.MenuItem;
+import android.graphics.drawable.ColorDrawable;
 
 public class AddTextActivity extends AppCompatActivity {
-    String msg = "Android : ";
-    private TextView switchStatus;
     private Switch mySwitch;
     private EditText editText;
     private Button doneButton;
     private DbHandle dbHandle;
-    private ReminderItem newItem;
     private ArrayList<Category> checkedCategories;
+    private boolean inStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_text);
-        Log.d(msg, "The AddTextActivity onCreate() event");
-        //switchStatus = (TextView) findViewById(R.id.switchStatus);
+        Log.d(getString(R.string.log_tag), "The AddTextActivity onCreate() event");
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
         checkedCategories = new ArrayList<Category>();
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) Log.d(getString(R.string.log_tag), "ActionBar is null");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
-        //set the switch to OFF initially
+        //set the switch to OFF by default
+        //remind inStore OFF by default
         mySwitch.setChecked(false);
+        inStore = false;
+
         //attach a listener to check for changes in state
         mySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -48,21 +59,13 @@ public class AddTextActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
-                Log.d(getString(R.string.log_tag), "Switch button clicked");
-                Toast.makeText(
-                        getApplicationContext(),
-                        getString(R.string.feature_not_ready),
-                        Toast.LENGTH_LONG
-                ).show();
-
-                /*
-                if(isChecked){
-                    switchStatus.setText("Switch is currently ON");
+                if(isChecked) {
+                    inStore = true;
                 } // if
                 else{
-                    switchStatus.setText("Switch is currently OFF");
+                    inStore = false;
                 } // else
-                */
+
             } // onCheckedChanged
         }); // setOnCheckedChangeListener
 
@@ -85,7 +88,7 @@ public class AddTextActivity extends AppCompatActivity {
                 }
 
                 // Add the item to the db
-                dbHandle.addItem(name, mySwitch.isChecked(), checkedCategories);
+                dbHandle.addItem(name, inStore, checkedCategories);
 
                 // Return back to the home screen
                 finish();
@@ -93,6 +96,30 @@ public class AddTextActivity extends AppCompatActivity {
         });
 
     } // onCreate
+
+    // back button override
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //Log.d(getString(R.string.log_tag), "Back button clicked");
+                String name = editText.getText().toString();
+                if (name.matches("") && checkedCategories.isEmpty()) finish();
+                else {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Discard Reminder?")
+                            .setNegativeButton(android.R.string.no, null)
+                            .setPositiveButton(android.R.string.yes, new OnClickListener() {
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    finish();
+                                }
+                            }).create().show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     public void onCheckboxClicked(View view) {
         // Is the view now checked?

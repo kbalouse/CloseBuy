@@ -1,11 +1,17 @@
 package fourpointoh.closebuy;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.content.Intent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import java.util.ArrayList;
@@ -17,21 +23,21 @@ import android.widget.Toast;
  * Created by josh on 29/11/2015.
  */
 public class EditTextActivity extends AppCompatActivity {
+    private Switch mySwitch;
     private DbHandle dbHandle;
     private ArrayList<ReminderItem> itemList;
-    private ReminderItem item;
-    //private Switch mySwitch;
     private EditText editText;
     private Button doneButton;
     private ArrayList<Category> checkedCategories;
     private int item_id;
+    private boolean inStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("log_tag", "The EditTextActivity onCreate() event");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_text);
-        //mySwitch = (Switch) findViewById(R.id.mySwitch);
+        mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
         checkedCategories = new ArrayList<Category>();
@@ -43,6 +49,11 @@ public class EditTextActivity extends AppCompatActivity {
         Log.d("log_tag", "THE ITEM ID IS " + item_id);
         // pull reminder item from DB based on listview position id
         itemList = dbHandle.getAllItems(); // write function for getItemByID
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) Log.d(getString(R.string.log_tag), "ActionBar is null");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         // TODO: Just pass the whole ReminderItem to the activity so we don't have to query DB and search
         ReminderItem item = null;
@@ -61,6 +72,22 @@ public class EditTextActivity extends AppCompatActivity {
 
         // update view with item pulled from DB
         updateView(item);
+
+        //attach a listener to check for changes in state
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    inStore = true;
+                } // if
+                else {
+                    inStore = false;
+                } // else
+
+            } // onCheckedChanged
+        }); // setOnCheckedChangeListener
 
         // change it to function call later instead of definition
         // unlike AddTextActivity, don't need to add to DB
@@ -82,7 +109,7 @@ public class EditTextActivity extends AppCompatActivity {
                 // update item in DB, boolean "update" = true
                 ReminderItem edited = new ReminderItem();
                 edited.categories = checkedCategories;
-                edited.inStore = true;
+                edited.inStore = inStore;
                 edited.itemName = name;
                 edited.enabled = true;
                 edited.id = item_id;
@@ -96,9 +123,29 @@ public class EditTextActivity extends AppCompatActivity {
 
     } // onCreate
 
+    // back button
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //Log.d(getString(R.string.log_tag), "Back button clicked");
+                new AlertDialog.Builder(this)
+                        .setTitle("Discard Changes?")
+                        .setNegativeButton(android.R.string.no, null)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                finish();
+                            }
+                        }).create().show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void updateView(ReminderItem item) {
         updateEditText(item.itemName);
-        updateSpecificStore();
+        updateInStore(item.inStore);
         updateCategories(item.categories);
     }
 
@@ -107,8 +154,9 @@ public class EditTextActivity extends AppCompatActivity {
         edit_message.setText(itemName);
     }
 
-    public void updateSpecificStore() {
-        // fill in if we decide to implement in future
+    public void updateInStore(boolean inStore_new) {
+        inStore = inStore_new;
+        mySwitch.setChecked(inStore);
     }
 
     public void updateCategories(ArrayList<Category> categories) {

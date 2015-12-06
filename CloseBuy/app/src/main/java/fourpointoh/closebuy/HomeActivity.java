@@ -1,6 +1,7 @@
 package fourpointoh.closebuy;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -58,6 +60,11 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Log.d(getString(R.string.log_tag), "onCreate()");
+
+        // hide default action bar
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) Log.d(getString(R.string.log_tag), "ActionBar is null");
+        actionBar.hide();
 
         // Initialize the preferences
         preferences = getPreferences(Context.MODE_PRIVATE);
