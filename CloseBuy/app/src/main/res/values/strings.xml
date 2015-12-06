@@ -24,4 +24,27 @@
     <string name="Done">Create Reminder</string>
     <string name="Done2">Save Changes</string>
     <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
+
+    <!--Snooze options in the settings menu-->
+    <!--This should be changed alongside of the minutes int array below-->
+    <string-array name="snooze_options_strings">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+    <integer-array name="snooze_options_minute_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>180</item>
+        <item>3600</item>
+        <item>720</item>
+        <item>1440</item>
+    </integer-array>
 </resources>

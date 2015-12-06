@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,6 +24,7 @@ import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -51,7 +53,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private Switch notificationSwitch;
     private SeekBar radiusSeekbar;
-    private SeekBar snoozeSeekbar;
+    private Spinner snoozeControl;
+    private int[] snoozeValues;
+
+    private ArrayAdapter<CharSequence> snoozeAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +77,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        // Initialize settings menu controls
         notificationSwitch = (Switch) findViewById(R.id.notification_switch);
         radiusSeekbar = (SeekBar) findViewById(R.id.radius_seekbar);
-        snoozeSeekbar = (SeekBar) findViewById(R.id.snooze_seekbar);
+        snoozeControl = (Spinner) findViewById(R.id.snooze_control);
+        snoozeAdapter = ArrayAdapter.createFromResource(this,
+                R.array.snooze_options_strings, android.R.layout.simple_spinner_item);
+        snoozeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        snoozeControl.setAdapter(snoozeAdapter);
+
+        snoozeValues = getResources().getIntArray(R.array.snooze_options_minute_values);
 
         // Set listeners for settings menu
         notificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -113,24 +125,38 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        snoozeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        snoozeControl.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(getString(R.string.log_tag), "User selected " + position + " which is " + snoozeValues[position] + "minutes");
+                setSnoozeSetting(snoozeValues[position]);
                 TextView tv = (TextView) findViewById(R.id.snooze_setting_text);
-                tv.setText(progress + " minutes");
+                tv.setText(snoozeValues[position] + " minutes");
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int value = seekBar.getProgress();
-                Log.d(getString(R.string.log_tag), "set snooze setting " + value);
-                setSnoozeSetting(value);
+            public void onNothingSelected(AdapterView<?> parent) {
+                setSnoozeSetting(getSnoozeSetting());
             }
         });
+//        snoozeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                TextView tv = (TextView) findViewById(R.id.snooze_setting_text);
+//                tv.setText(progress + " minutes");
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                int value = seekBar.getProgress();
+//                Log.d(getString(R.string.log_tag), "set snooze setting " + value);
+//                setSnoozeSetting(value);
+//            }
+//        });
 
         // Prevent left swipe on seek bar to close the drawer
         radiusSeekbar.setOnTouchListener(new View.OnTouchListener() {
@@ -140,13 +166,13 @@ public class HomeActivity extends AppCompatActivity {
                 return false;
             }
         });
-        snoozeSeekbar.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                snoozeSeekbar.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });
+//        snoozeSeekbar.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                snoozeSeekbar.getParent().requestDisallowInterceptTouchEvent(true);
+//                return false;
+//            }
+//        });
 
         // Settings menu button callback
         View menuButton = (View) findViewById(R.id.menu_button);
@@ -475,7 +501,7 @@ public class HomeActivity extends AppCompatActivity {
         int snooze = getSnoozeSetting();
 
         radiusSeekbar.setProgress(radius);
-        snoozeSeekbar.setProgress(snooze);
+//        snoozeControl.setProgress(snooze);
     }
 
     public static class ListUtils {

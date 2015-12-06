@@ -74,12 +74,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <SeekBar
-                android:id="@+id/snooze_seekbar"
+            <!--<SeekBar-->
+                <!--android:id="@+id/snooze_seekbar"-->
+                <!--android:layout_width="180dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:max="@integer/snooze_max"/>-->
+
+            <Spinner
+                android:id="@+id/snooze_control"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:max="@integer/snooze_max"/>
+                android:layout_gravity="center">
+            </Spinner>
+
             <TextView
                 android:id="@+id/snooze_setting_text"
                 android:layout_width="100dp"
