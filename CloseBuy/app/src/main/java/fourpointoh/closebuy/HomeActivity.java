@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
         actionBar.hide();
 
         // Initialize the preferences
-        preferences = getPreferences(Context.MODE_PRIVATE);
+        preferences = getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
 
         // Set the add button click handler
         View add = (View) findViewById(R.id.add_button);

@@ -6,6 +6,7 @@
     <string name="snooze_setting">fourpointoh.closebuy.snooze_setting</string>
     <string name="update_action">fourpointoh.closebuy.update_intent_action</string>
     <string name="first_app_launch">fourpointoh.closebuy.first_app_launch</string>
+    <string name="preference_file">fourpointoh.closebuy.prefs</string>
 
     <!--User facing strings-->
     <string name="app_name">CloseBuy</string>

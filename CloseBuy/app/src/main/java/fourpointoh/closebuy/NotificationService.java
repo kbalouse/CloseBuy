@@ -78,7 +78,9 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
     public void onDestroy() {
         Log.d(getString(R.string.log_tag), "NotificationService onDestroy(): NearbyStoreUpdate stopped");
 
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
 
         // Stop location updates
         if (requestingLocationUpdates) {
