@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FFFFFF">
 
     <include
         android:id="@+id/my_toolbar"
@@ -33,7 +33,9 @@
                 <fourpointoh.closebuy.SwipeMenuListView
                     android:id="@+id/nearby_item_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:dividerHeight="1dp"
+                    android:divider="@color/colorListHeader"/>
 
                 <TextView
                     android:id="@+id/in_store_list_header"
@@ -60,7 +62,7 @@
             <ImageView
                 android:layout_width="216dp"
                 android:layout_height="143dp"
-                android:layout_marginTop="149dp"
+                android:layout_marginTop="120dp"
                 android:src="@drawable/empty2"/>
 
             <TextView
@@ -96,7 +98,7 @@
         <RelativeLayout
             android:id="@+id/add_button"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="58dp"
             android:layout_alignParentBottom="true"
             android:elevation="4dp">
 
@@ -106,9 +108,9 @@
                 android:layout_centerVertical="true"
                 android:paddingLeft="25dp"
                 android:text="Add a reminder..."
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:fontFamily="sans-serif-light"
-                android:textColor="@color/colorListItemText" />
+                android:textColor="@color/colorDisabledListItemText" />
         </RelativeLayout>
 
     </RelativeLayout>

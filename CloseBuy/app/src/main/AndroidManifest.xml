@@ -9,7 +9,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+        android:theme="@style/Theme.AppCompat.Light" >
 
         <activity android:name=".HomeActivity" android:launchMode="singleInstance">
             <intent-filter>
@@ -32,12 +32,14 @@
         </receiver>
 
         <activity android:name=".AddTextActivity"
-            android:label="Add New Item"
+            android:label=""
+            android:parentActivityName=".HomeActivity"
             android:windowSoftInputMode="stateAlwaysVisible">
         </activity>
 
         <activity android:name=".EditTextActivity"
-            android:label="Edit Item"
+            android:label=""
+            android:parentActivityName=".HomeActivity"
             android:windowSoftInputMode="stateAlwaysVisible">
         </activity>
     </application>
