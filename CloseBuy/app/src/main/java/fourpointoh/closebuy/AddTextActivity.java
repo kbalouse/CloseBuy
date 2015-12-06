@@ -85,7 +85,7 @@ public class AddTextActivity extends AppCompatActivity {
                 }
 
                 // Add the item to the db
-                dbHandle.addItem(name, true, checkedCategories);
+                dbHandle.addItem(name, mySwitch.isChecked(), checkedCategories);
 
                 // Return back to the home screen
                 finish();

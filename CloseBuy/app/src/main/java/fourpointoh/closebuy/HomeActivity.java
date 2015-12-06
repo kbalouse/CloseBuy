@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,24 +14,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity implements ReminderItemActionListener {
+public class HomeActivity extends AppCompatActivity {
 
     private final int CONTEXT_MENU_ID_DELETE = 0;
     private final int CONTEXT_MENU_ID_DISABLE = 1;
@@ -41,9 +38,14 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
     private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean hasLocationPermission = false;
 
-    private ArrayList<ReminderItem> reminderItems;
-    private ReminderItemArrayAdapter adapter;
-    private SwipeMenuListView listView;
+    private ArrayList<ReminderItem> reminderItemsNearby;
+    private ReminderItemArrayAdapter adapterNearby;
+    private SwipeMenuListView listViewNearby;
+
+    private ArrayList<ReminderItem> reminderItemsInStore;
+    private ReminderItemArrayAdapter adapterInStore;
+    private SwipeMenuListView listViewInStore;
+
     private DbHandle dbHandle;
     private SharedPreferences preferences;
 
@@ -160,51 +162,85 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         // Initialize settings UI controls according to saved settings
         initializeSettingsUI();
 
-        // Get a db handle
-        dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
-
         // Set the reminder items to non null
-        reminderItems = new ArrayList<ReminderItem>();
+        reminderItemsNearby = new ArrayList<ReminderItem>();
+        reminderItemsInStore = new ArrayList<ReminderItem>();
 
         // Get the list view
-        listView = (SwipeMenuListView) findViewById(R.id.item_list);
+        listViewNearby = (SwipeMenuListView) findViewById(R.id.nearby_item_list);
+        listViewInStore = (SwipeMenuListView) findViewById(R.id.in_store_item_list);
 
         // Define and set the adapter
-        adapter = new ReminderItemArrayAdapter(this, R.layout.list_item, reminderItems);
-        listView.setAdapter(adapter);
+        adapterNearby = new ReminderItemArrayAdapter(this, R.layout.list_item, reminderItemsNearby);
+        adapterInStore = new ReminderItemArrayAdapter(this, R.layout.list_item, reminderItemsInStore);
+        listViewNearby.setAdapter(adapterNearby);
+        listViewInStore.setAdapter(adapterInStore);
 
         SwipeMenuCreator creator = new MySwipeMenuCreator(this);
-        listView.setMenuCreator(creator);
-        listView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        listViewNearby.setMenuCreator(creator);
+        listViewInStore.setMenuCreator(creator);
+        listViewNearby.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        listViewInStore.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
 
         // Set the click listeners for the list
         // single click/tap on item will go to item's edit page
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listViewNearby.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(getString(R.string.log_tag), "Item " + position + " on list going to edit page.");
                 Intent intent = new Intent(HomeActivity.this, EditTextActivity.class);
-                int itemId = reminderItems.get(position).id;
+                int itemId = reminderItemsNearby.get(position).id;
+                Log.d(getString(R.string.log_tag), "item id: " + itemId);
+                intent.putExtra("position_id", itemId);
+                startActivity(intent);
+            }
+        });
+        listViewInStore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(getString(R.string.log_tag), "Item " + position + " on list going to edit page.");
+                Intent intent = new Intent(HomeActivity.this, EditTextActivity.class);
+                int itemId = reminderItemsInStore.get(position).id;
                 Log.d(getString(R.string.log_tag), "item id: " + itemId);
                 intent.putExtra("position_id", itemId);
                 startActivity(intent);
             }
         });
 
-        listView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+        listViewNearby.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
                     case 0:
-                        ReminderItem item = reminderItems.get(position);
+                        ReminderItem item = reminderItemsNearby.get(position);
                         if (item.enabled) {
-                            disableReminder(position);
+                            disableReminder(position, reminderItemsNearby, listViewNearby);
                         } else {
-                            enableReminder(position);
+                            enableReminder(position, reminderItemsNearby, listViewNearby);
                         }
                         break;
                     case 1:
-                        deleteReminder(position);
+                        deleteReminder(position, reminderItemsNearby);
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
+        listViewInStore.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        ReminderItem item = reminderItemsInStore.get(position);
+                        if (item.enabled) {
+                            disableReminder(position, reminderItemsInStore, listViewInStore);
+                        } else {
+                            enableReminder(position, reminderItemsInStore, listViewInStore);
+                        }
+                        break;
+                    case 1:
+                        deleteReminder(position, reminderItemsInStore);
                         break;
                 }
                 // false : close the menu; true : not close the menu
@@ -212,8 +248,8 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
             }
         });
 
-        // Register the list view to create context menus when list items are long pressed
-        registerForContextMenu(listView);
+        // Get a db handle
+        dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
         // Need to ask permission in Android devices 6.0 (API 23) or higher
         askUserForLocationPermission();
@@ -258,16 +294,16 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         }
     }
 
-    public void deleteReminder(int arrayAdapterPosition) {
-        Log.d(getString(R.string.log_tag), "User is deleting reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
-        ReminderItem item = reminderItems.get(arrayAdapterPosition);
-        reminderItems.remove(arrayAdapterPosition);
+    public void deleteReminder(int arrayAdapterPosition, ArrayList<ReminderItem> array) {
+        Log.d(getString(R.string.log_tag), "User is deleting reminder item: " + array.get(arrayAdapterPosition).itemName);
+        ReminderItem item = array.get(arrayAdapterPosition);
+        array.remove(arrayAdapterPosition);
         dbHandle.deleteItem(item);
         updateList();
     }
 
-    public void disableReminder(int arrayAdapterPosition) {
-        Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+    public void disableReminder(int arrayAdapterPosition, ArrayList<ReminderItem> array, SwipeMenuListView listView) {
+        Log.d(getString(R.string.log_tag), "User is disabling reminder item: " + array.get(arrayAdapterPosition).itemName);
 
         // Change the UI on that item
         TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
@@ -275,13 +311,13 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         v.setTextColor(getResources().getColor(R.color.colorDisabledListItemText));
 
         // Update the data representation
-        ReminderItem item = reminderItems.get(arrayAdapterPosition);
+        ReminderItem item = array.get(arrayAdapterPosition);
         dbHandle.disableItem(item);
         updateList();
     }
 
-    public void enableReminder(int arrayAdapterPosition) {
-        Log.d(getString(R.string.log_tag), "User is enabling reminder item: " + reminderItems.get(arrayAdapterPosition).itemName);
+    public void enableReminder(int arrayAdapterPosition, ArrayList<ReminderItem> array, SwipeMenuListView listView) {
+        Log.d(getString(R.string.log_tag), "User is enabling reminder item: " + array.get(arrayAdapterPosition).itemName);
 
         // Change the UI on that item
         TextView v = (TextView) listView.getChildAt(arrayAdapterPosition - listView.getFirstVisiblePosition()).findViewById(R.id.item_name);
@@ -289,13 +325,12 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         v.setTextColor(getResources().getColor(R.color.colorListItemText));
 
         // Update the data representation
-        ReminderItem item = reminderItems.get(arrayAdapterPosition);
+        ReminderItem item = array.get(arrayAdapterPosition);
         dbHandle.enableItem(item);
         updateList();
     }
 
     private void updateList() {
-        View noRemindersView = findViewById(R.id.no_reminders);
 
         // Retrieve reminder items from DB
         ArrayList<ReminderItem> refreshedItems = dbHandle.getAllItems();
@@ -308,16 +343,41 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
         Log.d(getString(R.string.log_tag), "Update list: " + refreshedItems.size() + " items pulled from the db: " + itemNames);
 
         // Re-use reminderItems member, since it is attached to the adapter
-        reminderItems.clear();
-        for (int i = 0; i < refreshedItems.size(); ++i) {
-            reminderItems.add(refreshedItems.get(i));
+        reminderItemsNearby.clear();
+        reminderItemsInStore.clear();
+
+        // Add each item to the correct list
+        for (ReminderItem item : refreshedItems) {
+            if (item.inStore) {
+                reminderItemsInStore.add(item);
+            } else {
+                reminderItemsNearby.add(item);
+            }
         }
 
-        // Notify the adapter to refresh
-        adapter.notifyDataSetChanged();
+        // Notify the adapters to refresh
+        adapterNearby.notifyDataSetChanged();
+        adapterInStore.notifyDataSetChanged();
 
-        // Show or hide the "no reminders" text
-        if (reminderItems.size() == 0) {
+        ListUtils.setDynamicHeight(listViewNearby);
+        ListUtils.setDynamicHeight(listViewInStore);
+
+        View noRemindersView = findViewById(R.id.no_reminders);
+        View nearbyHeader = findViewById(R.id.nearby_list_header);
+        View inStoreHeader = findViewById(R.id.in_store_list_header);
+
+        // Show or hide the "no reminders" view and list headers
+        if (reminderItemsNearby.isEmpty()) {
+            nearbyHeader.setVisibility(View.GONE);
+        } else {
+            nearbyHeader.setVisibility(View.VISIBLE);
+        }
+        if (reminderItemsInStore.isEmpty()) {
+            inStoreHeader.setVisibility(View.GONE);
+        } else {
+            inStoreHeader.setVisibility(View.VISIBLE);
+        }
+        if (reminderItemsNearby.isEmpty() && reminderItemsInStore.isEmpty()) {
             noRemindersView.setVisibility(View.VISIBLE);
         } else {
             noRemindersView.setVisibility(View.GONE);
@@ -416,6 +476,27 @@ public class HomeActivity extends AppCompatActivity implements ReminderItemActio
 
         radiusSeekbar.setProgress(radius);
         snoozeSeekbar.setProgress(snooze);
+    }
+
+    public static class ListUtils {
+        public static void setDynamicHeight(ListView mListView) {
+            ListAdapter mListAdapter = mListView.getAdapter();
+            if (mListAdapter == null) {
+                // when adapter is null
+                return;
+            }
+            int height = 0;
+            int desiredWidth = View.MeasureSpec.makeMeasureSpec(mListView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+            for (int i = 0; i < mListAdapter.getCount(); i++) {
+                View listItem = mListAdapter.getView(i, null, mListView);
+                listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+                height += listItem.getMeasuredHeight();
+            }
+            ViewGroup.LayoutParams params = mListView.getLayoutParams();
+            params.height = height + (mListView.getDividerHeight() * (mListAdapter.getCount() - 1));
+            mListView.setLayoutParams(params);
+            mListView.requestLayout();
+        }
     }
 
     public static int dp2px(float dp, Context context){

@@ -14,17 +14,39 @@
         android:gravity="top">
 
         <!--Scrollable reminder lists-->
-        <LinearLayout
-            android:id="@+id/list_container"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_above="@+id/add_button">
 
-            <fourpointoh.closebuy.SwipeMenuListView
-                android:id="@+id/item_list"
+            <LinearLayout
+                android:id="@+id/list_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/nearby_list_header"
+                    style="@style/ListHeader"
+                    android:text="REMIND WHEN NEARBY" />
+
+                <fourpointoh.closebuy.SwipeMenuListView
+                    android:id="@+id/nearby_item_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/in_store_list_header"
+                    style="@style/ListHeader"
+                    android:text="REMIND ONLY IN STORE" />
+
+                <fourpointoh.closebuy.SwipeMenuListView
+                    android:id="@+id/in_store_item_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </ScrollView>
 
         <!--No reminder message-->
         <LinearLayout

@@ -8,6 +8,8 @@
     <color name="colorListItemText">#555555</color>
     <color name="colorDisabledListItemText">#BBBBBB</color>
 
+    <color name="colorListHeader">#1A1D1D26</color>
+
     <color name="colorUndoButton">#DBDBDB</color>
     <color name="colorDeleteButton">#FF3824</color>
 </resources>
