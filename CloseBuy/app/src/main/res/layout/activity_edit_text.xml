@@ -134,7 +134,7 @@
         android:id="@+id/btnDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Done"
+        android:text="@string/Done2"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="35dp"

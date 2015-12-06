@@ -15,11 +15,13 @@
 
 
     <!--Add text activity strings-->
-    <string name="edit_message">Item Name</string>
-    <string name="toggle_message">I want a specific store</string>
-    <string name="Categories">Categories</string>
+    <string name="edit_message">ITEM NAME</string>
+    <string name="toggle_message">Remind me only in store</string>
+    <string name="Categories">STORE CATEGORY</string>
+    <string name="Categories2">Select one or more type of stores that you would like to be reminded of.</string>
     <string name="Category1">Grocery</string>
     <string name="Category2">Convenience</string>
-    <string name="Done">Done</string>
+    <string name="Done">Create Reminder</string>
+    <string name="Done2">Save Changes</string>
     <string name="feature_not_ready">This feature is not implemented yet, try again later.</string>
 </resources>

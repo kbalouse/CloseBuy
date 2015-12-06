@@ -30,7 +30,7 @@ public class EditTextActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("log_tag", "The EditTextActivity onCreate() event");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_text);
+        setContentView(R.layout.activity_edit_text);
         //mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
         doneButton = (Button) findViewById(R.id.btnDone);
