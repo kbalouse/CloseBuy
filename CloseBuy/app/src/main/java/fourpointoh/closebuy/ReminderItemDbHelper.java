@@ -19,13 +19,11 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     public static final String DATABASE_NAME = "ReminderItem.db";
 
     // Table names
-    public static final String TABLE_CATEGORY = "Category";
     public static final String TABLE_ITEM = "Item";
     public static final String TABLE_CONTAINS = "Contains";
 
     // Category table columns
     public static final String CATEGORY_ID = "category_id";
-    // public static final String CATEGORY_NAME = "name";
 
     // Category table columns
     public static final String ITEM_ID = "item_id";
@@ -33,15 +31,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     public static final String ITEM_ENABLED = "enabled";
     public static final String ITEM_IN_STORE = "in_store";
 
-    // Schema creation SQL
-    /*
-    private static final String SQL_CREATE_CATEGORY_TABLE =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORY + " (" +
-                    CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    CATEGORY_NAME + " TEXT" +
-            " )";
-    */
-
+    // Table creation SQL
     private static final String SQL_CREATE_ITEM_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_ITEM + " (" +
                     ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -59,9 +49,6 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
                     " )";
 
     // Table deletion SQL
-    // private static final String SQL_DELETE_CATEGORY =
-    //        "DROP TABLE IF EXISTS " + TABLE_CATEGORY;
-
     private static final String SQL_DELETE_ITEM =
             "DROP TABLE IF EXISTS " + TABLE_ITEM;
 
@@ -77,7 +64,6 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        // db.execSQL(SQL_CREATE_CATEGORY_TABLE);
         db.execSQL(SQL_CREATE_ITEM_TABLE);
         db.execSQL(SQL_CREATE_CONTAINS_TABLE);
     }
@@ -86,7 +72,6 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
         // If database schema is changed, delete all existing data
         db.execSQL(SQL_DELETE_CONTAINS);
         db.execSQL(SQL_DELETE_ITEM);
-        // db.execSQL(SQL_DELETE_CATEGORY);
         onCreate(db);
     }
 
@@ -115,7 +100,7 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
                     item.enabled = cursor.getInt((cursor.getColumnIndex(ITEM_ENABLED))) == 1;
                     item.inStore = cursor.getInt((cursor.getColumnIndex(ITEM_IN_STORE))) == 1;
                     item.itemName = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
-                    item.categories = new ArrayList<Category>();
+                    item.categories = new ArrayList<>();
                     item.categories.add(categories[cursor.getInt(cursor.getColumnIndex(CATEGORY_ID)) - 1]);
                     previousItemId = item.id;
                 } else {
@@ -126,12 +111,6 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
 
             if (previousItemId != -1) itemList.add(item);
         }
-        return itemList;
-    }
-
-    // Returns all reminder items in the DB that have a category label of the 'category' parameter.
-    public ArrayList<ReminderItem> getItemsByCategory(Category category) {
-        ArrayList<ReminderItem> itemList = new ArrayList<>();
         return itemList;
     }
 
@@ -180,9 +159,10 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
     // If 'item' is not present in the DB, nothing will happen.
     public void deleteItem(ReminderItem item) {
         SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CONTAINS, ITEM_ID + " = ?",
+                new String[] { String.valueOf(item.id) });
         db.delete(TABLE_ITEM, ITEM_ID + " = ?",
                 new String[] { String.valueOf(item.id) });
-        // TODO: delete entries in the contains table with the same item id
     }
 
     public void disableItem(ReminderItem item) {
@@ -205,7 +185,6 @@ public class ReminderItemDbHelper extends SQLiteOpenHelper implements DbHandle {
         SQLiteDatabase db = Instance.getWritableDatabase();
         db.execSQL(SQL_DELETE_CONTAINS);
         db.execSQL(SQL_DELETE_ITEM);
-        // db.execSQL(SQL_DELETE_CATEGORY);
         onCreate(db);
     }
 

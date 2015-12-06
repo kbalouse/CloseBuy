@@ -10,9 +10,6 @@ public interface DbHandle {
     // Returns all reminder items in the DB.
     ArrayList<ReminderItem> getAllItems();
 
-    // Returns all reminder items in the DB that have a category label of the 'category' parameter.
-    ArrayList<ReminderItem> getItemsByCategory(Category category);
-
     // Adds a reminder item to the DB.
     // Duplicate (item name, category list) reminders can be added to the DB.
     void addItem(String itemName, boolean inStore, ArrayList<Category> categories);

@@ -6,9 +6,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -36,10 +38,19 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
     private LocationRequest locationRequest;
     private boolean requestingLocationUpdates;
     private Location previousLocation;
+    private CountDownTimer timer;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // WARNING: intent parameter may be null
+
+        String action = intent.getAction();
+        if (action != null && action.equals("snooze")) {
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+            onSnooze();
+            return START_STICKY;
+        }
 
         // Initialize
         appContext = getApplicationContext();
@@ -67,6 +78,8 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
     public void onDestroy() {
         Log.d(getString(R.string.log_tag), "NotificationService onDestroy(): NearbyStoreUpdate stopped");
 
+        timer.cancel();
+
         // Stop location updates
         if (requestingLocationUpdates) {
             requestingLocationUpdates = false;
@@ -89,6 +102,29 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
 
         // TODO: Return the communication channel to the service.
         // throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void onSnooze() {
+        if (requestingLocationUpdates) {
+            requestingLocationUpdates = false;
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    googleApiClient, this);
+        }
+
+        SharedPreferences prefs = getSharedPreferences("fourpointoh.closebuy.HomeActivity", MODE_PRIVATE);
+        int time = 60;
+        if (prefs != null) {
+            time = prefs.getInt("update_action", MODE_PRIVATE);
+        }
+
+        timer = new CountDownTimer(time * MILLIS_PER_SEC, MILLIS_PER_SEC) {
+            public void onTick(long millisUntilFinished) { return; }
+
+            public void onFinish() {
+                Intent startServiceIntent = new Intent(getApplicationContext(), NotificationService.class);
+                startService(startServiceIntent);
+            }
+        }.start();
     }
 
     @Override
@@ -173,34 +209,65 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
             Log.d(getString(R.string.log_tag), p.getName() + " types:" + p.getTypes());
             String message = "You are near " + p.getName() + ". Do you want to pick up ";
 
+            ArrayList<Integer> itemIds = new ArrayList<>();
+
             for (Category c : p.getRecognizedCategories()) {
                 if (categorySetMap.get(c) != null) {
                     for (ReminderItem item : categorySetMap.get(c)) {
                         message += item.itemName + ", ";
+                        itemIds.add(item.id);
                     }
                 }
             }
 
             message = message.substring(0, message.length() - 2) + "?";
             Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-            fireNotification(appContext, "CloseBuy", message, currentLoc, p, R.drawable.add_text_image);
+            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.drawable.add_text_image);
         }
-        /*
+
+        ArrayList<Integer> toDisable = new ArrayList<>();
+        if (categorySetMap.get(Category.GROCERY) != null) {
+            for (ReminderItem item : categorySetMap.get(Category.GROCERY)) {
+                toDisable.add(item.id);
+            }
+        }
+
+
         Place p = new Place();
         p.setLatitude(42.2797577);
         p.setLongitude(-83.7408239);
-        fireNotification(appContext, "CloseBuy", "You near a store?", currentLoc, p, R.drawable.add_text_image);
-        */
+        fireNotification(appContext, "CloseBuy", toDisable, "You near a store?", currentLoc, p, R.drawable.add_text_image);
+
     }
 
-    private void fireNotification(Context context, String title, String description, Place start, Place destination, int iconResource) {
-        // Create the pending intent to start the home page activity
+    private void fireNotification(Context context, String title, ArrayList<Integer> itemIds, String description, Place start, Place destination, int iconResource) {
         Intent homePageIntent = new Intent(context, HomeActivity.class);
+        homePageIntent.setAction("0");
+        homePageIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingHomePage = PendingIntent.getActivity(context, 0, homePageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Bundle idBundle = new Bundle();
+        idBundle.putIntegerArrayList("ids", itemIds);
+
+        // Create the pending intent to disable items on homepage
+        Intent homePageDisableIntent = new Intent(context, HomeActivity.class);
+        homePageDisableIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        homePageDisableIntent.putExtra("methodName", "disableItem");
+        homePageDisableIntent.putExtra("idBundle", idBundle);
+        homePageDisableIntent.setAction("1");
+        PendingIntent pendingHomePageDisable = PendingIntent.getActivity(context, 0, homePageDisableIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        // Create the pending intent to snooze app
+        Intent snoozeIntent = new Intent(context, NotificationService.class);
+        snoozeIntent.setAction("snooze");
+        PendingIntent pendingSnooze = PendingIntent.getService(context, 0, snoozeIntent, 0);
+
 
         String mapsUrl = "http://maps.google.com/maps?saddr=" + start.getLatitude() + "," + start.getLongitude() +
                 "&daddr=" + destination.getLatitude() + "," + destination.getLongitude();
         Intent mapIntent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(mapsUrl));
+        //mapIntent.setAction("3");
         PendingIntent pendingMaps = PendingIntent.getActivity(context, 0, mapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Create the notification builder and set the appropriate fields
@@ -210,9 +277,9 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
         builder.setSmallIcon(iconResource);
         builder.setContentIntent(pendingHomePage);
         builder.setStyle(new Notification.BigTextStyle().bigText(description));
-        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Buy",  pendingHomePage);
-        builder.addAction(android.R.drawable.ic_lock_idle_alarm, "Sleep",  pendingHomePage);
-        builder.addAction(android.R.drawable.ic_menu_directions, "Map", pendingMaps);
+        builder.addAction(R.drawable.icon_check, "Done",  pendingHomePageDisable);
+        builder.addAction(R.drawable.icon_snooze, "Snooze",  pendingSnooze);
+        builder.addAction(R.drawable.icon_map, "Map", pendingMaps);
         builder.setVibrate(new long[]{1000, 1000});
         builder.setAutoCancel(true);
 

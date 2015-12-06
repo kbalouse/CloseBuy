@@ -1,6 +1,7 @@
 package fourpointoh.closebuy;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -268,6 +269,30 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
 
         Log.d(getString(R.string.log_tag), "onDestroy()");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        String method = intent.getStringExtra("methodName");
+        if(method != null && method.equals("disableItem")){
+            Bundle extra = intent.getBundleExtra("idBundle");
+            ArrayList<Integer> itemIds = extra.getIntegerArrayList("ids");
+            for (Integer i : itemIds) {
+                ReminderItem item = new ReminderItem();
+                item.id = i;
+                dbHandle.disableItem(item);
+            }
+
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+            finish();
+        } else if (method != null && method.equals("snooze")) {
+            Bundle extra = intent.getBundleExtra("idBundle");
+        } else if (method != null && method.equals("maps")) {
+            // go to maps
+        }
     }
 
     private void initializeNotificationService() {
