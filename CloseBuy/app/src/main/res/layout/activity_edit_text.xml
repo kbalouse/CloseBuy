@@ -4,13 +4,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp" >
+    android:paddingRight="16dp"
+    android:background="#ffffff">
     <EditText android:id="@+id/edit_message"
         android:layout_weight="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_message"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:inputType="textAutoComplete|textAutoCorrect|text" />
 
     <Switch
@@ -52,7 +53,7 @@
         android:layout_gravity="center_vertical"
         android:layout_below="@+id/textView1"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:onClick="onCheckboxClicked"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#333333"
