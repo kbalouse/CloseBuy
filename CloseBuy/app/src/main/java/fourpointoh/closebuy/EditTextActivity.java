@@ -1,6 +1,7 @@
 package fourpointoh.closebuy;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -27,7 +30,7 @@ public class EditTextActivity extends AppCompatActivity {
     private DbHandle dbHandle;
     private ArrayList<ReminderItem> itemList;
     private EditText editText;
-    private Button doneButton;
+    private View doneButton;
     private ArrayList<Category> checkedCategories;
     private int item_id;
     private boolean inStore;
@@ -39,7 +42,7 @@ public class EditTextActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_text);
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
-        doneButton = (Button) findViewById(R.id.btnDone);
+        doneButton = (View) findViewById(R.id.btnDone);
         checkedCategories = new ArrayList<Category>();
         // Get a db handle
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
@@ -122,6 +125,28 @@ public class EditTextActivity extends AppCompatActivity {
         });
 
     } // onCreate
+
+    // Close keyboard when user touches anywhere but on the keyboard
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+
+        View v = getCurrentFocus();
+        boolean ret = super.dispatchTouchEvent(event);
+
+        if (v instanceof EditText) {
+            View w = getCurrentFocus();
+            int scrcoords[] = new int[2];
+            w.getLocationOnScreen(scrcoords);
+            float x = event.getRawX() + w.getLeft() - scrcoords[0];
+            float y = event.getRawY() + w.getTop() - scrcoords[1];
+
+            if (event.getAction() == MotionEvent.ACTION_UP && (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom()) ) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+            }
+        }
+        return ret;
+    }
 
     // back button
     @Override

@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
     android:background="#ffffff">
     <EditText android:id="@+id/edit_message"
         android:layout_weight="1"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/edit_message"
         android:layout_marginTop="10dp"
+        android:textSize="15sp"
         android:inputType="textAutoComplete|textAutoCorrect|text" />
 
     <Switch
@@ -32,6 +33,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/Categories"
         android:textStyle="bold"
+        android:textSize="15sp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@+id/mySwitch" />
 
@@ -41,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textColor="#555555"
+        android:textSize="13sp"
         android:text="@string/Categories2"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_below="@+id/textView1" />
@@ -57,6 +60,7 @@
         android:onClick="onCheckboxClicked"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#333333"
+        android:textSize="13dp"
         android:button="@null"
         android:background="@drawable/checkbox_selector"/>
 
@@ -70,6 +74,7 @@
         android:onClick="onCheckboxClicked"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#333333"
+        android:textSize="13dp"
         android:button="@null"
         android:background="@drawable/checkbox_selector"/>
 
@@ -114,6 +119,7 @@
         android:onClick="onCheckboxClicked"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#333333"
+        android:textSize="13dp"
         android:button="@null"
         android:background="@drawable/checkbox_selector"/>
 
@@ -128,20 +134,22 @@
         android:onClick="onCheckboxClicked"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#333333"
+        android:textSize="13dp"
         android:button="@null"
         android:background="@drawable/checkbox_selector"/>
 
-    <Button
+    <TextView
         android:id="@+id/btnDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="302dp"
+        android:layout_height="53dp"
+        android:gravity="center"
         android:text="@string/Done2"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="28dp"
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/edit_message"
         android:background="#81D5B5"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:textSize="15sp"/>
 
 </RelativeLayout>

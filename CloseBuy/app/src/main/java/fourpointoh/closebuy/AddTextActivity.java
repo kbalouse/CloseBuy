@@ -1,10 +1,13 @@
 package fourpointoh.closebuy;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
@@ -26,7 +29,7 @@ import android.graphics.drawable.ColorDrawable;
 public class AddTextActivity extends AppCompatActivity {
     private Switch mySwitch;
     private EditText editText;
-    private Button doneButton;
+    private View doneButton;
     private DbHandle dbHandle;
     private ArrayList<Category> checkedCategories;
     private boolean inStore;
@@ -38,7 +41,7 @@ public class AddTextActivity extends AppCompatActivity {
         Log.d(getString(R.string.log_tag), "The AddTextActivity onCreate() event");
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         editText = (EditText) findViewById(R.id.edit_message);
-        doneButton = (Button) findViewById(R.id.btnDone);
+        doneButton = (View) findViewById(R.id.btnDone);
         checkedCategories = new ArrayList<Category>();
         dbHandle = ReminderItemDbHelper.getInstance(getApplicationContext());
 
@@ -96,6 +99,28 @@ public class AddTextActivity extends AppCompatActivity {
         });
 
     } // onCreate
+
+    // Close keyboard when user touches anywhere but on the keyboard
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+
+        View v = getCurrentFocus();
+        boolean ret = super.dispatchTouchEvent(event);
+
+        if (v instanceof EditText) {
+            View w = getCurrentFocus();
+            int scrcoords[] = new int[2];
+            w.getLocationOnScreen(scrcoords);
+            float x = event.getRawX() + w.getLeft() - scrcoords[0];
+            float y = event.getRawY() + w.getTop() - scrcoords[1];
+
+            if (event.getAction() == MotionEvent.ACTION_UP && (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom()) ) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+            }
+        }
+        return ret;
+    }
 
     // back button override
     @Override
