@@ -56,6 +56,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private Switch notificationSwitch;
     private SeekBar radiusSeekbar;
+    private int RADIUS_MAX;
+    private int RADIUS_MIN;
     private Spinner snoozeControl;
     private int[] snoozeValues;
 
@@ -86,8 +88,11 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Initialize settings menu controls
+        RADIUS_MAX = getResources().getInteger(R.integer.radius_max);
+        RADIUS_MIN = getResources().getInteger(R.integer.radius_min);
         notificationSwitch = (Switch) findViewById(R.id.notification_switch);
         radiusSeekbar = (SeekBar) findViewById(R.id.radius_seekbar);
+        radiusSeekbar.setMax(RADIUS_MAX - RADIUS_MIN);
         snoozeControl = (Spinner) findViewById(R.id.snooze_control);
         snoozeAdapter = ArrayAdapter.createFromResource(this,
                 R.array.snooze_options_strings, android.R.layout.simple_spinner_item);
@@ -118,6 +123,7 @@ public class HomeActivity extends AppCompatActivity {
         radiusSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progress += RADIUS_MIN;
                 TextView tv = (TextView) findViewById(R.id.radius_setting_text);
                 tv.setText(progress + " meters");
             }
@@ -129,7 +135,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int value = seekBar.getProgress();
                 Log.d(getString(R.string.log_tag), "set radius setting " + value);
-                setRadiusSetting(seekBar.getProgress());
+                setRadiusSetting(seekBar.getProgress() + RADIUS_MIN);
             }
         });
 
@@ -138,8 +144,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(getString(R.string.log_tag), "User selected " + position + " which is " + snoozeValues[position] + "minutes");
                 setSnoozeSetting(snoozeValues[position]);
-                TextView tv = (TextView) findViewById(R.id.snooze_setting_text);
-                tv.setText(snoozeValues[position] + " minutes");
             }
 
             @Override
@@ -147,24 +151,6 @@ public class HomeActivity extends AppCompatActivity {
                 setSnoozeSetting(getSnoozeSetting());
             }
         });
-//        snoozeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                TextView tv = (TextView) findViewById(R.id.snooze_setting_text);
-//                tv.setText(progress + " minutes");
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                int value = seekBar.getProgress();
-//                Log.d(getString(R.string.log_tag), "set snooze setting " + value);
-//                setSnoozeSetting(value);
-//            }
-//        });
 
         // Prevent left swipe on seek bar to close the drawer
         radiusSeekbar.setOnTouchListener(new View.OnTouchListener() {
@@ -174,13 +160,6 @@ public class HomeActivity extends AppCompatActivity {
                 return false;
             }
         });
-//        snoozeSeekbar.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                snoozeSeekbar.getParent().requestDisallowInterceptTouchEvent(true);
-//                return false;
-//            }
-//        });
 
         // Settings menu button callback
         View menuButton = (View) findViewById(R.id.menu_button);
@@ -531,9 +510,16 @@ public class HomeActivity extends AppCompatActivity {
     private void initializeSettingsUI() {
         int radius = getRadiusSetting();
         int snooze = getSnoozeSetting();
+        radiusSeekbar.setProgress(radius - RADIUS_MIN);
 
-        radiusSeekbar.setProgress(radius);
-//        snoozeControl.setProgress(snooze);
+        int position = 0;
+        for (int i = 0; i < snoozeValues.length; i++) {
+            if (snoozeValues[i] == snooze) {
+                position = i;
+                break;
+            }
+        }
+        snoozeControl.setSelection(position);
     }
 
     public static class ListUtils {

@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBoldText"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:text="Notifications" />
         <Switch
             android:id="@+id/notification_switch"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorBoldText"
             android:text="Nearby Reminder Radius"
-            android:textSize="24sp" />
+            android:textSize="16sp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -54,7 +54,7 @@
                 android:textColor="@color/colorListItemText"
                 android:gravity="center"
                 android:text="50 meters"
-                android:textSize="16sp"
+                android:textSize="13sp"
                 android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
@@ -69,17 +69,10 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorBoldText"
             android:text="Snooze Duration"
-            android:textSize="24sp"/>
+            android:textSize="16sp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <!--<SeekBar-->
-                <!--android:id="@+id/snooze_seekbar"-->
-                <!--android:layout_width="180dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center"-->
-                <!--android:max="@integer/snooze_max"/>-->
 
             <Spinner
                 android:id="@+id/snooze_control"
@@ -88,15 +81,6 @@
                 android:layout_gravity="center">
             </Spinner>
 
-            <TextView
-                android:id="@+id/snooze_setting_text"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/colorListItemText"
-                android:gravity="center"
-                android:text="90 minutes"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
 

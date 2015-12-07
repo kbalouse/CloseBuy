@@ -246,6 +246,10 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
                     toDisplay.add(item);
                 }
             }
+
+            message = message.substring(0, message.length() - 2) + "?";
+            Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
+            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.mipmap.shop);
         }
 
 
