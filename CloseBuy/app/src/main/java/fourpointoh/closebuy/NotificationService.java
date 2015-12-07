@@ -44,7 +44,10 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
     public int onStartCommand(Intent intent, int flags, int startId) {
         // WARNING: intent parameter may be null
 
-        String action = intent.getAction();
+        String action = "";
+        if (intent != null)
+            action = intent.getAction();
+
         if (action != null && action.equals("snooze")) {
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(0);
@@ -113,10 +116,10 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
                     googleApiClient, this);
         }
 
-        SharedPreferences prefs = getSharedPreferences("fourpointoh.closebuy.HomeActivity", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.preference_file), MODE_PRIVATE);
         int time = 60;
         if (prefs != null) {
-            time = prefs.getInt("update_action", MODE_PRIVATE);
+            time = prefs.getInt(getString(R.string.snooze_setting), -1);
         }
 
         timer = new CountDownTimer(time * MILLIS_PER_SEC, MILLIS_PER_SEC) {
@@ -166,10 +169,19 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
     private void locationUpdateTask(double latitude, double longitude) {
         Log.d(getString(R.string.log_tag), "NotificationService locationUpdateTask(" + latitude + ", " + longitude + ")");
 
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.preference_file), MODE_PRIVATE);
+        int radius = 100;
+        if (prefs != null)
+            radius = prefs.getInt(getString(R.string.radius_setting), -1);
+
+
+        latitude = 42.2797577;
+        longitude = -83.7408239;
+
         GooglePlacesRequest request = new GooglePlacesRequest();
         request.setLatitude(latitude);
         request.setLongitude(longitude);
-        request.setRadius((double) 100);
+        request.setRadius((double) radius);
 
         Place currentLoc = new Place();
         currentLoc.setLatitude(latitude);
@@ -187,6 +199,8 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
         // mapping: category -> all items that have that category.
         Map<Category, Set<ReminderItem>> categorySetMap = new HashMap<Category, Set<ReminderItem>>();
         for (ReminderItem item : items) {
+            if (!item.enabled) continue;
+
             for (Category c : item.categories) {
                 // Make sure the map entry is there
                 Set<ReminderItem> s = categorySetMap.get(c);
@@ -197,6 +211,8 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
             }
         }
 
+        if (categorySetMap.isEmpty()) return;
+
         // Add the google category names to the request
         for (Category c : categorySetMap.keySet()) {
             request.addType(c.toGoogleCategoryString());
@@ -205,41 +221,59 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
         // Make the API query
         ArrayList<Place> places = new GooglePlacesService(appContext).getNearbyPlaces(request);
 
-        // For each returned place, fire a notification for all items that fit its categories
-        Log.d(getString(R.string.log_tag), "API Results");
+        if (places.isEmpty()) return;
+
+        double dist = Double.MAX_VALUE;
+        Place closest = new Place();
         for (Place p : places) {
-            Log.d(getString(R.string.log_tag), p.getName() + " types:" + p.getTypes());
-            String message = "You are near " + p.getName() + ". Do you want to pick up ";
+            double currDist = getDistanceFromLatLon(p.getLatitude(), p.getLongitude(), latitude, longitude);
+            if (currDist < dist) {
+                closest = p;
+            }
+        }
 
-            ArrayList<Integer> itemIds = new ArrayList<>();
+        HashSet<ReminderItem> toDisplay = new HashSet<>();
 
-            for (Category c : p.getRecognizedCategories()) {
-                if (categorySetMap.get(c) != null) {
-                    for (ReminderItem item : categorySetMap.get(c)) {
-                        message += item.itemName + ", ";
-                        itemIds.add(item.id);
+        for (Category c : closest.getRecognizedCategories()) {
+            Set<ReminderItem> itemList = categorySetMap.get(c);
+            if (itemList == null) continue;
+            for (ReminderItem item : itemList) {
+                if (item.inStore == true) {
+                    if (getDistanceFromLatLon(closest.getLatitude(), closest.getLongitude(), latitude, longitude) < 10) {
+                        toDisplay.add(item);
                     }
+                } else {
+                    toDisplay.add(item);
                 }
             }
-
-            message = message.substring(0, message.length() - 2) + "?";
-            Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.drawable.add_text_image);
-        }
-
-        ArrayList<Integer> toDisable = new ArrayList<>();
-        if (categorySetMap.get(Category.GROCERY) != null) {
-            for (ReminderItem item : categorySetMap.get(Category.GROCERY)) {
-                toDisable.add(item.id);
-            }
         }
 
 
-        Place p = new Place();
-        p.setLatitude(42.2797577);
-        p.setLongitude(-83.7408239);
-        fireNotification(appContext, "CloseBuy", toDisable, "You near a store?", currentLoc, p, R.drawable.add_text_image);
+        String message = "You are near " + closest.getName() + ". Do you want to pick up ";
+        ArrayList<Integer> itemIds = new ArrayList<>();
+        for (ReminderItem item : toDisplay) {
+            message += item.itemName + ", ";
+            itemIds.add(item.id);
+        }
 
+        message = message.substring(0, message.length() - 2) + "?";
+        Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
+        fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, closest, R.drawable.add_text_image);
+    }
+
+    private double getDistanceFromLatLon(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2 - lat1);  // deg2rad below
+        double dLon = deg2rad(lon2 - lon1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c; // Distance in km
+        return d * 1000;
+    }
+
+    private double deg2rad(double deg) {
+        return deg * (Math.PI/180);
     }
 
     private void fireNotification(Context context, String title, ArrayList<Integer> itemIds, String description, Place start, Place destination, int iconResource) {
