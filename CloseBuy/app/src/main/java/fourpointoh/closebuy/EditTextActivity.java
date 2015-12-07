@@ -162,30 +162,33 @@ public class EditTextActivity extends AppCompatActivity {
     public void updateCategories(ArrayList<Category> categories) {
         CheckBox checkBox;
         for (Category c: categories) {
-           int category = c.getId(); // ENUM
-                // set checkbox view to checked according to category
-                // add additional statements once we finalize categories
-                // make sure category ENUM corresponds to right R.id.(refer to "Category")
-                if (category == 1) {
+
+            switch (c) {
+                case GROCERY:
                     checkBox = (CheckBox)findViewById(R.id.grocery);
-                    Log.d("log_tag", "grocery view id = " + R.id.grocery);
                     checkBox.setChecked(!checkBox.isChecked());
-                }
-                else if (category == 2) {
-                    checkBox = (CheckBox)findViewById(R.id.pharmacy);
-                    Log.d("log_tag", "pharmacy view id = " + R.id.pharmacy);
-                    checkBox.setChecked(!checkBox.isChecked());
-                }
-                else if (category == 4) {
+                    break;
+                case CONVENIENCE:
                     checkBox = (CheckBox)findViewById(R.id.convenience);
-                    Log.d("log_tag", "convenience view id = " + R.id.convenience);
                     checkBox.setChecked(!checkBox.isChecked());
-                }
-                else if (category == 5) {
+                    break;
+                case PHARMACY:
+                    checkBox = (CheckBox)findViewById(R.id.pharmacy);
+                    checkBox.setChecked(!checkBox.isChecked());
+                    break;
+                case HARDWARE:
+                    checkBox = (CheckBox)findViewById(R.id.hardware);
+                    checkBox.setChecked(!checkBox.isChecked());
+                    break;
+                case PET:
                     checkBox = (CheckBox)findViewById(R.id.petCare);
-                    Log.d("log_tag", "petCare view id = " + R.id.petCare);
                     checkBox.setChecked(!checkBox.isChecked());
-                }
+                    break;
+                case ELECTRONICS:
+                    checkBox = (CheckBox)findViewById(R.id.electronics);
+                    checkBox.setChecked(!checkBox.isChecked());
+                    break;
+            }
         } // for
 
     } //updateCategories
@@ -229,11 +232,11 @@ public class EditTextActivity extends AppCompatActivity {
                 else
                     checkedCategories.remove(Category.PET);
                 break;
-            case R.id.postOffice:
-//                if (checked)
-//                    checkedCategories.add(Category.);
-//                else
-//                    checkedCategories.remove(Category.);
+            case R.id.electronics:
+                if (checked)
+                    checkedCategories.add(Category.ELECTRONICS);
+                else
+                    checkedCategories.remove(Category.ELECTRONICS);
                 break;
         } //switch
 

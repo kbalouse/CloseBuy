@@ -158,11 +158,11 @@ public class AddTextActivity extends AppCompatActivity {
                 else
                     checkedCategories.remove(Category.PET);
                 break;
-            case R.id.postOffice:
-//                if (checked)
-//                    checkedCategories.add(Category.);
-//                else
-//                    checkedCategories.remove(Category.);
+            case R.id.electronics:
+                if (checked)
+                    checkedCategories.add(Category.ELECTRONICS);
+                else
+                    checkedCategories.remove(Category.ELECTRONICS);
                 break;
         }
     }

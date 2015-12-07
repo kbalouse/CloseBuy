@@ -71,12 +71,26 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
             TextView tv = (TextView) bubble.findViewById(R.id.category_text);
             tv.setText(c.toReadableString());
 
-            // TODO: make multiple round_edge_box.xml with different colors
-            // TODO: change the bubble background drawable to match the category color
-            if (System.currentTimeMillis()%2 == 0) {
-                tv.setTextColor(context.getResources().getColor(R.color.colorPrimary));
-            } else {
-                tv.setTextColor(context.getResources().getColor(R.color.colorAccent));
+            // Set bubble background color
+            switch (c) {
+                case HARDWARE:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.hardware_bubble_box));
+                    break;
+                case GROCERY:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.grocery_bubble_box));
+                    break;
+                case PHARMACY:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.pharmacy_bubble_box));
+                    break;
+                case ELECTRONICS:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.electronics_bubble_box));
+                    break;
+                case CONVENIENCE:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.convenience_bubble_box));
+                    break;
+                case PET:
+                    tv.setBackground(context.getResources().getDrawable(R.drawable.petstore_bubble_box));
+                    break;
             }
 
             categoryContainer.addView(bubble);

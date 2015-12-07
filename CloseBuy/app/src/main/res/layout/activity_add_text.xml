@@ -120,8 +120,8 @@
     <CheckBox
         android:layout_width="87dp"
         android:layout_height="87dp"
-        android:text="Post Office"
-        android:id="@+id/postOffice"
+        android:text="Electronics"
+        android:id="@+id/electronics"
         android:checked="false"
         android:layout_alignTop="@+id/petCare"
         android:layout_alignStart="@+id/pharmacy"

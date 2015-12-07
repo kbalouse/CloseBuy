@@ -4,7 +4,7 @@ package fourpointoh.closebuy;
  * Created by nick on 24/10/15.
  */
 public enum Category {
-    GROCERY(1), PHARMACY(2), BAKERY(3), CONVENIENCE(4), PET(5), ELECTRONICS(6), HARDWARE(7); // new categories must be added incrementally by 1
+    GROCERY(1), PHARMACY(2), BAKERY(3), CONVENIENCE(4), PET(5), ELECTRONICS(6), HARDWARE(7), ATM(8); // new categories must be added incrementally by 1
     public final int id;
     Category(int id) {
         this.id = id;
@@ -30,6 +30,8 @@ public enum Category {
                 return "Electronics";
             case HARDWARE:
                 return "Hardware";
+            case ATM:
+                return "ATM";
             default:
                 return "";
         }
@@ -53,6 +55,8 @@ public enum Category {
                 return "electronics_store";
             case HARDWARE:
                 return "hardware_store";
+            case ATM:
+                return "atm";
             default:
                 return "";
         }
@@ -76,6 +80,8 @@ public enum Category {
             return ELECTRONICS;
         } else if (s.equals("hardware_store")) {
             return HARDWARE;
+        } else if (s.equals("atm")) {
+            return ATM;
         } else {
             return null;
         }

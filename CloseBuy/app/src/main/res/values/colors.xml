@@ -14,4 +14,11 @@
     <color name="colorDeleteButton">#FF3824</color>
 
     <color name="myActionBar">#ffffff</color>
+
+    <color name="colorCatElectronics">#9387B5</color>
+    <color name="colorCatGrocery">#81D5B5</color>
+    <color name="colorCatPharmacy">#FB971D</color>
+    <color name="colorCatHardware">#8DDB1B</color>
+    <color name="colorCatPetStore">#FF7A5D</color>
+    <color name="colorCatConvenienceStore">#FEC947</color>
 </resources>
