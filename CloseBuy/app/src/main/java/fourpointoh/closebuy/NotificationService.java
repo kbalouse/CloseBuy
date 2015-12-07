@@ -246,10 +246,6 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
                     toDisplay.add(item);
                 }
             }
-
-            message = message.substring(0, message.length() - 2) + "?";
-            Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.mipmap.shop);
         }
 
 
@@ -262,7 +258,7 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
 
         message = message.substring(0, message.length() - 2) + "?";
         Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-        fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, closest, R.drawable.add_text_image);
+        fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, closest, R.mipmap.shop);
     }
 
     private double getDistanceFromLatLon(double lat1, double lon1, double lat2, double lon2) {
