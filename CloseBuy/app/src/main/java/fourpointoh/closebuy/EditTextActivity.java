@@ -57,6 +57,7 @@ public class EditTextActivity extends AppCompatActivity {
         if (actionBar == null) Log.d(getString(R.string.log_tag), "ActionBar is null");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        actionBar.setElevation(0);
 
         // TODO: Just pass the whole ReminderItem to the activity so we don't have to query DB and search
         ReminderItem item = null;

@@ -49,6 +49,7 @@ public class AddTextActivity extends AppCompatActivity {
         if (actionBar == null) Log.d(getString(R.string.log_tag), "ActionBar is null");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        actionBar.setElevation(0);
 
         //set the switch to OFF by default
         //remind inStore OFF by default

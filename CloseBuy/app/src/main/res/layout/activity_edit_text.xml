@@ -13,18 +13,35 @@
         android:hint="@string/edit_message"
         android:layout_marginTop="10dp"
         android:textSize="15sp"
-        android:inputType="textAutoComplete|textAutoCorrect|text" />
+        android:inputType="textAutoComplete|textAutoCorrect|text"
+        android:background="@android:color/transparent"/>
+
+    <include
+        layout="@layout/line_border"
+        android:id="@+id/border1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/edit_message"
+        android:layout_marginTop="14dp"/>
 
     <Switch
         android:id="@+id/mySwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/toggle_message"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/edit_message"
+        android:layout_marginTop="14dp"
+        android:layout_below="@+id/border1"
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/edit_message"
         android:checked="false" />
+
+    <include
+        layout="@layout/line_border"
+        android:id="@+id/border2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/mySwitch"
+        android:layout_marginTop="14dp"/>
 
     <TextView
         android:id="@+id/textView1"
@@ -35,7 +52,7 @@
         android:textStyle="bold"
         android:textSize="15sp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_below="@+id/mySwitch" />
+        android:layout_below="@+id/border2" />
 
     <TextView
         android:id="@+id/textView2"
