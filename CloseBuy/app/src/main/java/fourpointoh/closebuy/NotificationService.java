@@ -224,7 +224,7 @@ public class NotificationService extends Service implements GoogleApiClient.Conn
 
             message = message.substring(0, message.length() - 2) + "?";
             Log.d(getString(R.string.log_tag), "Notification message: \"" + message + "\"");
-            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.drawable.add_text_image);
+            fireNotification(appContext, "CloseBuy", itemIds, message, currentLoc, p, R.mipmap.shop);
         }
 
         ArrayList<Integer> toDisable = new ArrayList<>();
