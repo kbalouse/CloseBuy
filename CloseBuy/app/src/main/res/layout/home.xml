@@ -45,7 +45,9 @@
                 <fourpointoh.closebuy.SwipeMenuListView
                     android:id="@+id/in_store_item_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:dividerHeight="1dp"
+                    android:divider="@color/colorListHeader"/>
             </LinearLayout>
 
         </ScrollView>

@@ -60,12 +60,19 @@ public class ReminderItemArrayAdapter extends ArrayAdapter<ReminderItem> {
         // Add in category bubbles
         ViewGroup categoryContainer = (ViewGroup) v.findViewById(R.id.category_container);
         for (int i = 0; i < item.categories.size(); i++) {
+            // Only allow 2 category bubbles to be shown, to avoid showing a cut off bubble.
+            if (i == 2) {
+                break;
+            }
+
             Category c = item.categories.get(i);
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View bubble = inflater.inflate(R.layout.category_bubble, categoryContainer, false);
             TextView tv = (TextView) bubble.findViewById(R.id.category_text);
             tv.setText(c.toReadableString());
 
+            // TODO: make multiple round_edge_box.xml with different colors
+            // TODO: change the bubble background drawable to match the category color
             if (System.currentTimeMillis()%2 == 0) {
                 tv.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             } else {

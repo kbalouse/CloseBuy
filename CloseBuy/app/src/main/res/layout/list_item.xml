@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="146dp"
+        android:layout_width="138dp"
         android:layout_height="62dp"
         android:gravity="center_vertical"
         android:paddingLeft="38dp"
