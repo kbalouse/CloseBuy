@@ -402,17 +402,23 @@ public class HomeActivity extends AppCompatActivity {
         View noRemindersView = findViewById(R.id.no_reminders);
         View nearbyHeader = findViewById(R.id.nearby_list_header);
         View inStoreHeader = findViewById(R.id.in_store_list_header);
+        View nearbyListEdge = findViewById(R.id.nearby_list_bottom_edge);
+        View inStoreListEdge = findViewById(R.id.in_store_list_bottom_edge);
 
         // Show or hide the "no reminders" view and list headers
         if (reminderItemsNearby.isEmpty()) {
             nearbyHeader.setVisibility(View.GONE);
+            nearbyListEdge.setVisibility(View.GONE);
         } else {
             nearbyHeader.setVisibility(View.VISIBLE);
+            nearbyListEdge.setVisibility(View.VISIBLE);
         }
         if (reminderItemsInStore.isEmpty()) {
             inStoreHeader.setVisibility(View.GONE);
+            inStoreListEdge.setVisibility(View.GONE);
         } else {
             inStoreHeader.setVisibility(View.VISIBLE);
+            inStoreListEdge.setVisibility(View.VISIBLE);
         }
         if (reminderItemsNearby.isEmpty() && reminderItemsInStore.isEmpty()) {
             noRemindersView.setVisibility(View.VISIBLE);

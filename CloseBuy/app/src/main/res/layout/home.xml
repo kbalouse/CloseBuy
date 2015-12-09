@@ -36,6 +36,9 @@
                     android:layout_height="wrap_content"
                     android:dividerHeight="1dp"
                     android:divider="@color/colorListHeader"/>
+                <include
+                    android:id="@+id/nearby_list_bottom_edge"
+                    layout="@layout/line_border"/>
 
                 <TextView
                     android:id="@+id/in_store_list_header"
@@ -48,6 +51,10 @@
                     android:layout_height="wrap_content"
                     android:dividerHeight="1dp"
                     android:divider="@color/colorListHeader"/>
+                <include
+                    android:id="@+id/in_store_list_bottom_edge"
+                    layout="@layout/line_border"/>
+
             </LinearLayout>
 
         </ScrollView>
